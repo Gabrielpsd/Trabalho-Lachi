@@ -13,8 +13,35 @@
 	
 	
 */
+#include <stdio.h> /* NULL */ 
+#include <stdlib.h> /* srand(), rand() */ 
+#include <time.h> /* time()*/ 
 
-int main(int argc, char *argv[]){
+#include "console_v1.5.h" /* COORD. */  
+#include "quadrado_h.h" /* cria janela */ 
+
+int main(int argc, char *argv[])
+{	
+	printf("Entrou aqui (1) \n");
+	int cor;
 	
+	srand(time(NULL));
+	
+	cor = rand() % 15 + 1; 
+	printf("Entrou aqui (2) \n");
+	COORD *ponto1, *ponto2;  
 
+	printf("Entrou aqui (3) \n");
+	ponto1->X = 6;
+	ponto1->Y = 7;
+	
+	printf("Entrou aqui (4) \n");
+	ponto2->X = 10;
+	ponto2->Y = 11;
+	
+	
+	printf("Entrou aqui (5) \n");
+	cria_janela(ponto1,ponto2,5);
+	printf("Entrou aqui (6) \n");
+	return 0;
 }
