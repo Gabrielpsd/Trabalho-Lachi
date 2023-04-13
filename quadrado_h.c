@@ -18,7 +18,7 @@ void set_ambiente(tela *console)
 		 console->dimensao_maxima = MaxDimensaoJanela();
 		 console->inicial_tela = posicaoJanela();
 		 
-		 setposicaoJanela(0,0);
+		 setPosicaoJanela(0,0);
 		 setDimensaoJanela(console->dimensao_maxima.X, console->dimensao_maxima.Y);
 		 setTituloConsole(TITULO);
 		 
