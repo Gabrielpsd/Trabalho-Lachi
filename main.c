@@ -11,6 +11,7 @@
 	
 	Obs: Para evitar erros durante a execução recomenda-se que configure seu prompt de comando para que utilize as propriedades herdadas do prompt 
 	
+	codigo para compilação: gcc main.c -o saida.exe conio_v3.2.4.c console_v1.5.c graphics_v1.1.c quadrado_h.c -lgdi32
 	
 */
 #include <stdio.h> /* NULL */ 
@@ -22,26 +23,30 @@
 
 int main(int argc, char *argv[])
 {	
-	printf("Entrou aqui (1) \n");
 	int cor;
+	
+	clrscr();
 	
 	srand(time(NULL));
 	
 	cor = rand() % 15 + 1; 
-	printf("Entrou aqui (2) \n");
-	COORD *ponto1, *ponto2;  
-
-	printf("Entrou aqui (3) \n");
+	COORD *ponto1, *ponto2,p1,p2;  
+	
+	ponto1 = &p1;
+	ponto2 = &p2;
+	
 	ponto1->X = 6;
 	ponto1->Y = 7;
 	
-	printf("Entrou aqui (4) \n");
-	ponto2->X = 10;
-	ponto2->Y = 11;
+
+	ponto2->X = 50;
+	ponto2->Y = 70;
 	
+	cria_janela(ponto1,ponto2,cor);
 	
-	printf("Entrou aqui (5) \n");
-	cria_janela(ponto1,ponto2,5);
-	printf("Entrou aqui (6) \n");
+	getch();
+	
+	cria_janela(ponto1,ponto2,0);
+	
 	return 0;
 }
