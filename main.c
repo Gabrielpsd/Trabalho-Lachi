@@ -23,14 +23,14 @@
 
 int main(int argc, char *argv[])
 {	
+	printf("estou aqui(1)\n");
+	CONSOLE *console;
 	int cor;
-	
-	clrscr();
-	
 	srand(time(NULL));
 	
 	cor = rand() % 15 + 1; 
 	COORD *ponto1, *ponto2,p1,p2;  
+	int linha = 100,coluna = 50;
 	
 	ponto1 = &p1;
 	ponto2 = &p2;
@@ -39,14 +39,19 @@ int main(int argc, char *argv[])
 	ponto1->Y = 7;
 	
 
-	ponto2->X = 50;
-	ponto2->Y = 70;
+	ponto2->X = ponto1->X + linha;
+	ponto2->Y = ponto1->Y + coluna;
 	
-	cria_janela(ponto1,ponto2,cor);
+	clrscr();
+	set_ambiente(console,ATIVAR);
 	
-	getch();
+	gotoxy(4,5);
+	cria_janela(ponto1,ponto2,cor,ATIVAR, console);
 	
-	cria_janela(ponto1,ponto2,0);
+	gotoxy(0,0);
+	cria_janela(ponto1,ponto2,cor,DESATIVAR,console);
+	set_ambiente(console,DESATIVAR);
+	
 	
 	return 0;
 }

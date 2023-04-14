@@ -19,12 +19,16 @@
 |													|
 |---------------------------------------------------|
 */
+typedef enum{
+	DESATIVAR,
+	ATIVAR
+}ATIVIDADE;
 
 typedef struct _tela{
 	COORD dimensao_atual;
 	COORD dimensao_maxima;
 	COORD inicial_tela;
-}tela;
+}CONSOLE;
 
 /*
 |---------------  Ambiente -------------------------|
@@ -33,9 +37,9 @@ typedef struct _tela{
 |		Tamanho Maximo;								|
 |---------------------------------------------------|
 */
-void Set_ambiente(tela *);
+void set_ambiente(CONSOLE *, int);
 
-void cria_janela(COORD *, COORD *, int);
+void cria_janela(COORD *, COORD *, int, int, CONSOLE*);
 
 /*
 |-------------------  Fim  -------------------------|
@@ -44,6 +48,6 @@ void cria_janela(COORD *, COORD *, int);
 |													|
 |---------------------------------------------------|
 */
-void fim_jogo(tela *);
+void fim_jogo(CONSOLE *);
 
 #endif /* quadrado_h */ 
