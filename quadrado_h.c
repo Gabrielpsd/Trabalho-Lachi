@@ -5,7 +5,7 @@
 
 
 #include "conio_v3.2.4.h" /* teXtbackground()*/ 
-#include "console_v1.5.h" /* COORD */ 
+#include "console_v1.5.h" /* COORD , outra soncole*/ 
 #include "quadrado_h.h" /* cria_janela() */
 
 
