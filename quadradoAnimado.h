@@ -5,20 +5,7 @@
 
 #define TITULO "Quadrado Animado"  
 
-	/* ---------   funcao que ira criar a janela inicial na tela ----------------------
-		a funcao utilizara dois pontos como referencia, sendo Ponto1 o ponto da diagonal superior esquerda 
-		e o Ponto2 o ponto localixado no canto inferior direito, a funcao realizaraa ligação entre os dois 
-		utilizando a funcao linha da biblioteca Conio
-	*/ 
-
-	/*
-	|-------------------  tela -------------------------|
-	|	Guarda as informações da tela, são elas:		|
-	|		Posicao inicial;							|
-	|		Tamanho Maximo;								|
-	|													|
-	|---------------------------------------------------|
-	*/
+/* --------------------------- Declaracoes de variaveis e constantes ------------------------------------*/ 
 typedef enum{
 	DESATIVAR,
 	ATIVAR
@@ -40,6 +27,63 @@ typedef struct _Janela{
 }JANELA;
 
 	/*
+	|-------------------  quadrado interno -------------|
+	|	Nessa estrutura sera armazenada o quadrado		|
+	|	que ficara se movimentando no centro 			|
+	|	da janela 										|
+	|													|
+	|---------------------------------------------------|
+	*/
+
+typedef struct _quadrado{
+	int cor;
+	int centro;
+}QUADRADO;
+
+/* -------------------------------------FIM DAS DECLARAÇÕES DAS VARIAVEIS E COSNTANTES-------------------*/ 
+
+/* -------------------------------------DECLARAÇÕES DE FUNCOES-------------------------------------------*/ 
+	/*
+	|---------------  inicia jogo  -------------------------|
+	|	unica funcao fora da ordem alfabetica  				|
+	|	essa funcao ira realizar a chamada das outras  		|
+	|	funcoes do programa 					 			|
+	|-------------------------------------------------------|
+	*/
+	
+void inicia_jogo();
+
+	/*
+	|---------------  cria ponto ---------------------------|
+	|	ira criar os pontos principais a qual 				|
+	|	o programa ira utilizar como referencia para 		|
+	|	realizar as configurações e movimentações 			|
+	|-------------------------------------------------------|
+	*/
+	
+void cria_ponto(JANELA *, CONSOLE);
+
+
+	/*
+	|---------------  Janela ---------------------------|
+	|	Ira criar a janela principal do jogo			|
+	|		Tamanho da janela e posicao da janela		|
+	|		Tamanho Maximo;								|
+	|---------------------------------------------------|
+	*/	
+	
+void gerencia_janela(JANELA *, int,CONSOLE);
+
+	/*
+	|---------------  movimenta_quadrado ---------------|
+	|	 Ira realizar a movimentação do quadrado 		|	
+	|	interno do programa								|
+	|---------------------------------------------------|
+	*/
+	
+void movimenta_quadrado(QUADRADO *, JANELA);
+
+	/*
 	|---------------  Ambiente -------------------------|
 	|	Ira criar a definição do prompt do jogo			|
 	|		Tamanho da janela e posicao da janela		|
@@ -49,33 +93,9 @@ typedef struct _Janela{
 void set_ambiente(CONSOLE *, int);
 
 
-	/*
-	|---------------  Janela ---------------------------|
-	|	Ira criar a janela principal do jogo			|
-	|		Tamanho da janela e posicao da janela		|
-	|		Tamanho Maximo;								|
-	|---------------------------------------------------|
-	*/
-	
-void gerencia_janela(JANELA *, int,CONSOLE);
-
-void cria_janela1(JANELA, int, CONSOLE);
-
-void cria_janela2(JANELA);
-
-void cria_ponto(JANELA *, CONSOLE);
-
-void inicia_jogo();
-
-	/*
-	|-------------------  Fim  -------------------------|
-	|	Ira Remover a janela principal do jogo			|
-	|	retornar Tamanho da janela e posicao da janela	|
-	|													|
-	|---------------------------------------------------|
-	*/
-void fim_jogo(CONSOLE *);
 
 void depuracao(JANELA, CONSOLE,int);
+
+/*------------------------------------------FIM DAS DECLARACOES DAS FUNCOES -----------------------------*/ 
 
 #endif /* quadradoAnimado */ 

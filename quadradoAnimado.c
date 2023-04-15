@@ -10,7 +10,135 @@
 #include "quadradoAnimado.h" /* cria_janela() */
 
 #define DEPURACAO 0
-/* criacao da janela onde o jogo sera executado*/
+
+
+	/*
+	|---------------  INICIO ---------------------------|
+	|	 Unica funcao fora da ordem alfabetica 			|
+	|	por ser a principal do programa, ela aparecera	|
+	|	em primeiro;									|
+	|													|
+	|	 Atraves dessa funcao que o programa executa as |
+	|	chamadas para as outras funcoes do programa		|
+	|---------------------------------------------------|
+	*/
+void inicia_jogo()
+{	
+	int cor; 
+	JANELA *Janela, refJanela;
+	CONSOLE *monitor , Pointer_console;
+	
+	monitor = &Pointer_console;
+	Janela = &refJanela;
+	
+	srand(time(NULL));
+	
+	cor = rand() % 15 + 1;
+	
+	set_ambiente(monitor, 1);
+	
+	cria_ponto(Janela, *monitor);
+	
+	gerencia_janela(Janela, cor, *monitor);
+
+	depuracao(*Janela, *monitor, DEPURACAO);
+	
+	textbackground(0);
+	getchar();
+	clrscr();
+	
+	gotoxy(1,1);
+	set_ambiente(monitor, 0);
+
+}
+
+	/*
+	|---------------  Cria ponto ---------------------------|
+	|	 Para que possa ser criado as zonas de impacto		|
+	|	do quadrado interno, ele seguira refernecia por 3 	|
+	|	pontos princiapais(centro e diagonais) essa funcao 	|
+	|	tem o objetivo de criar esses valores inicias para 	|
+	|	o programa trabalhar								|
+	|-------------------------------------------------------|
+	*/
+void cria_ponto(JANELA *Janela,CONSOLE console)
+{
+	
+	Janela->ponto1 = &(Janela->ref1);
+	Janela->ponto2 = &(Janela->ref2);
+	Janela->centro = &(Janela->refC);
+	
+	Janela->linha = 80;
+	Janela->coluna = 20;
+	
+	
+	Janela->ponto1->X = 5;
+	Janela->ponto1->Y = 5;
+	
+	Janela->ponto2->X = Janela->ponto1->X + Janela->linha ;
+	Janela->ponto2->Y = Janela->ponto1->Y + Janela->coluna ;
+	
+	Janela->centro->X = (Janela->ponto1->X + (Janela->linha/2)) + (console.dimensao_maxima.X/2)/2;
+	Janela->centro->Y = (Janela->ponto1->Y + (Janela->coluna/2)) + (console.dimensao_maxima.Y/2)/2;
+}
+
+	/*
+	|---------------  Gerencia Janela ----------------------|
+	|	 Cria a janela principal.							|	
+	|	A funcao utiliza os 3 pontos da estrutura PONTO 	|
+	|	como referencia, trocando a cor do fundo 		 	|
+	|	caracter por caracter conectando os  pontos das  	|
+	|	diagonais											|
+	|-------------------------------------------------------|
+	*/
+void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
+{
+	int i, tamanho, RefX, RefY; 
+	clrscr();
+	textbackground(9);
+	
+	/* para criar a janela sera criada quatro funcoes que tem como controle o tamanho da linha e da coluna
+	essas funcoes serao 4 for's para criar as linhas e as colunas
+	*/
+	RefX = (console.dimensao_maxima.X/2)/2;
+	RefY = (console.dimensao_maxima.Y/2)/2; 
+		
+	for(i = 0; i < Janela->linha; ++i)
+	{
+		/* linha superior */ 
+		gotoxy(RefX + Janela->ponto1->X + i,RefY + Janela->ponto1->Y);
+		putchar(32);
+		
+		/*linha inferior*/
+		gotoxy(RefX + Janela->ponto1->X+i,RefY +Janela->ponto2->Y);
+		putchar(32);
+	
+	}
+
+	for(i = 0; i <= Janela->coluna; ++i)
+	{
+		/* coluna horizontal da esquerda */ 
+		gotoxy(RefX + Janela->ponto1->X,RefY +Janela->ponto1->Y + i);
+		putchar(32);
+		
+		/*coluna horizontal direita */ 
+		gotoxy(RefX + Janela->ponto2->X,RefY +Janela->ponto1->Y+i);
+		putchar(32);
+	}
+	
+	gotoxy(Janela->centro->X,Janela->centro->Y);
+}
+
+	/*
+	|---------------  Set ambiente -------------------------|
+	|	 Configura o console inicial ao mesmo tempo			|	
+	|	ele armazena os dados para que a janela retorne		|
+	|	a como estava no inicio do programa 	 		 	|
+	|	 Essa funcao tem tanto a atividade de configurar   	|
+	|	o console inicial como de restaurar as configurações|
+	|	que estavam anteriormente							|
+	|-------------------------------------------------------|
+	*/
 
 void set_ambiente(CONSOLE *console, int status )
 {
@@ -53,141 +181,15 @@ void set_ambiente(CONSOLE *console, int status )
 	}
 }
 
-/* funcao que ira  criar a Janela na tela 
 
-	 como a janela esta em modo teXto, podemos imprimir utilizando duas funcoes da bibliteca conio, a que troca a cor do fundo do teXto
-	 e a funcao que cria uma janela, nesse caso estaremos criando uma janela com espessura de 1(linha ou coluna) logo ela sera uma linha vertical ou horizontal 
-	 na tela
-*/
-
-void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
-{
-	int i, tamanho, RefX, RefY; 
-	clrscr();
-	textbackground(9);
-	
-	/* para criar a janela sera criada quatro funcoes que tem como controle o tamanho da linha e da coluna
-	essas funcoes serao 4 for's para criar as linhas e as colunas
-	*/
-	RefX = (console.dimensao_maxima.X/2)/2;
-	RefY = (console.dimensao_maxima.Y/2)/2; 
-		
-	for(i = 0; i < Janela->linha; ++i)
-	{
-		/* linha superior */ 
-		gotoxy(RefX + Janela->ponto1->X + i,RefY + Janela->ponto1->Y);
-		putchar(32);
-		
-		/*linha inferior*/
-		gotoxy(RefX + Janela->ponto1->X+i,RefY +Janela->ponto2->Y);
-		putchar(32);
-	
-	}
-
-	for(i = 0; i <= Janela->coluna; ++i)
-	{
-		/* coluna horizontal da esquerda */ 
-		gotoxy(RefX + Janela->ponto1->X,RefY +Janela->ponto1->Y + i);
-		putchar(32);
-		
-		/*coluna horizontal direita */ 
-		gotoxy(RefX + Janela->ponto2->X,RefY +Janela->ponto1->Y+i);
-		putchar(32);
-	}
-	
-	gotoxy(Janela->centro->X,Janela->centro->Y);
-}
-
-void cria_janela1(JANELA janela, int corBorda, CONSOLE console)
-{	
-	
-		/*
-	|---------------  Cria janela  ---------------------|
-	|	A funcao ira criar as janelas coloridas			|
-	|	onde ocorre as movimentações do jogo 			|
-	|	a função trablalha utilizando a window da conio	|
-	|	e funciona com uma sobreposição de duas janelas |
-	|   A mais externa(a Borda) e a mais interna		|
-	|  (onde o jogo ocorrera em si) com a coloração 	|
-	|	preta											|
-	|---------------------------------------------------|
-	*/	textbackground(0);
-		gotoxy((console.dimensao_maxima.X/2)/2,(console.dimensao_maxima.Y/2)/2);
-		textbackground((corBorda%corBorda)+7);
-		window(janela.ponto1->X, janela.ponto1->Y, janela.ponto2->X, janela.ponto2->Y);
-		gotoxy(1,1);
-		clrscr();
-}
-
-
-void cria_ponto(JANELA *Janela,CONSOLE console)
-{
-	Janela->ponto1 = &(Janela->ref1);
-	Janela->ponto2 = &(Janela->ref2);
-	Janela->centro = &(Janela->refC);
-	
-	Janela->linha = 80;
-	Janela->coluna = 20;
-	
-	
-	Janela->ponto1->X = 5;
-	Janela->ponto1->Y = 5;
-	
-	Janela->ponto2->X = Janela->ponto1->X + Janela->linha ;
-	Janela->ponto2->Y = Janela->ponto1->Y + Janela->coluna ;
-	
-	Janela->centro->X = (Janela->ponto1->X + (Janela->linha/2)) + (console.dimensao_maxima.X/2)/2;
-	Janela->centro->Y = (Janela->ponto1->Y + (Janela->coluna/2)) + (console.dimensao_maxima.Y/2)/2;
-}
 /*
-void cria_janela2(JANELA janela)
-{
-	textbackground(8);
-	window(janela.ponto1->X +1, janela.ponto1->Y+1, janela.ponto2->X-1, janela.ponto2->Y-1);
-	getchar();
-	gotoxy(1,1);
-	textbackground(0);
-	clrscr();
+	|---------------  depuracao   --------------------------|
+	|	 Não utilizado na versão final 						|
+	|	serve apenas para imprimir o valor das variaveis 	|
+	|	quando necessario									|
+	|-------------------------------------------------------|
+	*/
 	
-}
-*/
-
-void inicia_jogo()
-{	
-	int cor; 
-	JANELA *Janela, refJanela;
-	CONSOLE *monitor , Pointer_console;
-	
-	monitor = &Pointer_console;
-	Janela = &refJanela;
-	
-	srand(time(NULL));
-	
-	cor = rand() % 15 + 1;
-	
-	set_ambiente(monitor, 1);
-	
-	cria_ponto(Janela, *monitor);
-	
-	gerencia_janela(Janela, cor, *monitor);
-
-	depuracao(*Janela, *monitor, DEPURACAO);
-	
-	textbackground(0);
-	getchar();
-	clrscr();
-	
-	gotoxy(1,1);
-	set_ambiente(monitor, 0);
-	
-	fim_jogo(monitor);
-}
-
-void fim_jogo(CONSOLE * monitor)
-{
-	monitor->dimensao_inicial = monitor->dimensao_inicial;
-}
-
 void depuracao(JANELA Janela, CONSOLE console, int depuracao)
 {
 	textcolor(RED);
