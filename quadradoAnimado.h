@@ -4,7 +4,7 @@
 #include <Windows.h> /* COORD */ 
 
 #define TITULO "Quadrado Animado"  
-
+#define TAMANHO 16
 /* --------------------------- Declaracoes de variaveis e constantes ------------------------------------*/ 
 typedef enum
 {
@@ -26,7 +26,17 @@ typedef struct _tela
 	COORD dimensao_inicial;
 	COORD posicao_inicial;
 	COORD dimensao_maxima;
+	
 }CONSOLE;
+
+/* estrutura que guarda as informações apresentadas na tela */ 
+
+typedef struct _informacao
+{
+	char *titulo;
+	char nome[TAMANHO], direcao[TAMANHO], tecla[TAMANHO]; 
+	
+}INFO_TELA;
 
 typedef struct _Janela
 {
@@ -50,6 +60,7 @@ typedef struct _Janela
 typedef struct _quadrado{
 	int cor;
 	COORD *centro , refCentro;
+	
 }QUADRADO;
 
 /* -------------------------------------FIM DAS DECLARAÇÕES DAS VARIAVEIS E COSNTANTES-------------------*/ 
@@ -73,7 +84,7 @@ void inicia_jogo();
 	|-------------------------------------------------------|
 	*/
 	
-void cria_quadrado(QUADRADO *, ATIVIDADE);
+void cria_quadrado(QUADRADO *, JANELA);
 
 	/*
 	|---------------  cria ponto ---------------------------|
@@ -85,6 +96,8 @@ void cria_quadrado(QUADRADO *, ATIVIDADE);
 
 void cria_ponto(JANELA *, CONSOLE);
 
+
+void fim_programa();
 
 	/*
 	|---------------  Janela ---------------------------|
@@ -102,10 +115,13 @@ void gerencia_janela(JANELA *, int,CONSOLE);
 	|	interno do programa								|
 	|---------------------------------------------------|
 	*/
-	
-void imprime_quadrado(QUADRADO, int);
 
 void movimenta_quadrado(QUADRADO *, JANELA, DIRECAO);
+
+void imprime_informacao(INFO_TELA, CONSOLE);
+
+void imprime_quadrado(QUADRADO, ATIVIDADE);
+
 
 	/*
 	|---------------  Ambiente -------------------------|
@@ -114,7 +130,7 @@ void movimenta_quadrado(QUADRADO *, JANELA, DIRECAO);
 	|		Tamanho Maximo;								|
 	|---------------------------------------------------|
 	*/
-void set_ambiente(CONSOLE *, int);
+void set_ambiente(CONSOLE *);
 
 
 

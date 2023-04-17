@@ -12,8 +12,7 @@
 #define DEPURACAO 0
 
 
-	/*
-	|---------------  INICIO ---------------------------|
+/*	|---------------  INICIO ---------------------------|
 	|	 Unica funcao fora da ordem alfabetica 			|
 	|	por ser a principal do programa, ela aparecera	|
 	|	em primeiro;									|
@@ -21,32 +20,41 @@
 	|	 Atraves dessa funcao que o programa executa as |
 	|	chamadas para as outras funcoes do programa		|
 	|---------------------------------------------------|
-	*/
+*/
+
 void inicia_jogo()
 {	
 	int cor, direcao; 
 	JANELA *Janela, refJanela;
 	CONSOLE *monitor , Pointer_console;
 	QUADRADO *quadrado, refquad;
+	INFO_TELA *tela, Reftela;
 	
 	monitor = &Pointer_console;
 	Janela = &refJanela;
 	quadrado = &refquad;
-	quadrado = &refquad;
+	tela = &Reftela;
 	
 	srand(time(NULL));
 	
 	cor = rand() % 15 + 1;
 	direcao = rand() % 3 ;
-	set_ambiente(monitor, ATIVAR);
 	
-	cria_ponto(Janela, *monitor);
+	/* apagar depois essa parte */ 
+	tela->titulo = TITULO;
 	
-	cria_quadrado(quadrado);
+	set_ambiente(monitor);
+	printf("sai do ambiente ");
+	getchar();
 	
 	gerencia_janela(Janela, cor, *monitor);
+	printf("sai da janela ");
+	getchar();
 	
-	movimenta_quadrado(quadrado, *Janela, direcao);
+	cria_ponto(Janela, *monitor);	
+	cria_quadrado(quadrado,*Janela);
+	
+	imprime_informacao(*tela,*monitor);
 	
 	depuracao(*Janela, *monitor, DEPURACAO);
 	
@@ -55,8 +63,7 @@ void inicia_jogo()
 	clrscr();
 	
 	gotoxy(1,1);
-	set_ambiente(monitor, DESATIVAR);
-
+	fim_programa(*monitor);
 }
 
 /*	|---------------  Cria ponto ---------------------------|
@@ -89,16 +96,45 @@ void cria_ponto(JANELA *Janela,CONSOLE console)
 	Janela->centro->Y = (Janela->ponto1->Y + (Janela->coluna/2)) + (console.dimensao_maxima.Y/2)/2;
 }
 
-void cria_quadrado(QUADRADO *quadrado)
-{
-	
-	quadrado->centro->X = Janela->centro->X;
-	quadrado->centro->Y = Janela->centro->Y;
+/*	|---------------- Cria quadrado-------------------------|
+	|		A funcao ira apenas fazer a configuração 		|
+	|	inicial do quadrado, essa funcao so é utilizada		|
+	|	no inicio do programa. 								|
+	|-------------------------------------------------------|
+*/
+
+void cria_quadrado(QUADRADO *quadrado, JANELA Janela)
+{	
+	printf("centro quadrado %uh centro janela %uh",quadrado->centro->X , Janela.centro->X );
+	quadrado->centro->X = Janela.centro->X;
+	printf("centro quadrado %d centro janela %d",quadrado->centro->X , Janela.centro->X );
+	quadrado->centro->Y = Janela.centro->Y;
 	
 	quadrado->cor = 4;
 	
-	imprime_quadrado(*quadrado,)
+	printf("mandei imprimir");
+	imprime_quadrado(*quadrado, ATIVAR);
 }
+
+/*	|---------------  Fim programa    ----------------------|
+	|	   A funcao ira realizar reconfiguração de 			|
+	|	  do ambiente voltando para as configurações inicias|
+	|-------------------------------------------------------|
+*/
+
+void fim_programa(CONSOLE console){
+
+		setPosicaoJanela(console.posicao_inicial.X,console.posicao_inicial.Y);
+		setDimensaoJanela(console.dimensao_inicial.X,console.dimensao_inicial.Y);
+		setEstadoBarraTarefas(VISIVEL);
+		setCursorStatus(LIGAR);
+		
+		textbackground(0);
+		clrscr();
+		gotoxy(1,1);
+}
+
+
 /*	|---------------  Gerencia Janela ----------------------|
 	|	 Cria a janela principal.							|	
 	|	A funcao utiliza os 3 pontos da estrutura PONTO 	|
@@ -152,9 +188,34 @@ void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
 	Janela->centro->X += RefX;
 	Janela->centro->Y += RefY;
 	
+	printf("saido da janela ");
 }
 
-void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
+void imprime_informacao(INFO_TELA tela,CONSOLE console)
+{	
+	int dimensaoX, dimensaoY;
+	/* a mensagem inicial sera impresso no topo da tela */ 
+	gotoxy((console.dimensao_maxima.X/2),2);
+	textcolor(RED);
+	printf("%s",tela.titulo);
+	 
+	 
+	gotoxy((console.dimensao_maxima.X * (0.25)),(console.dimensao_maxima.Y * (0.75)));
+	printf("Direcao atual: ");
+	
+	gotoxy((console.dimensao_maxima.X*0.5),(console.dimensao_maxima.Y*0.75));
+	printf("Direcao atual: ");
+}
+
+/*	|---------------imprime quadrado-----------------------|
+	|       A função realizará a impressão do quadrado 	   |
+	|     interno utilizando como referencia o ponto 	   |		
+	|	  central que é uma variavel da estrutura que 	   |	
+	|	  esta contida na estrutura do quadrado			   |
+	|------------------------------------------------------|
+*/
+	
+void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 {
 	int i, j; 
 	
@@ -187,7 +248,19 @@ void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
 	}
 }
 
-/* ----------------implementando o movimenta janela ---------------------*/ 
+
+/* 	|---------------- movimenta quadrado -------------------|
+	|		A funcao movimenta quadrado ira realizar 		|
+	|	a movimentação do quadrado interno, o parametro de 	|
+	|	direção se trata de de um ENUM que foi determinado 	|
+	|	no cabecalho;										|
+	|		Como o quadrado interno só tera um movimentação |
+	|	por vez a movimentação funciona alterando os 		|
+	|	parametros X ou Y do quadrado e realiza a chamadas	|
+	|	da funcao de impressao com a estrutura modificada 	|
+	|-------------------------------------------------------|
+*/
+ 
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 {	
 	switch (direcao)
@@ -247,6 +320,7 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 	}
 }	
 	
+	
 /*		|---------------  Set ambiente -------------------------|
 		|	 Configura o console inicial ao mesmo tempo			|	
 		|	ele armazena os dados para que a janela retorne		|
@@ -257,47 +331,41 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 		|-------------------------------------------------------|
 */
 
-void set_ambiente(CONSOLE *console, int status )
+void set_ambiente(CONSOLE *console)
 {
-	if(status){
+	/* armazena todos os valores atuais do console 
+	assim como sua posicao maxima, para que o console de usuario 
+	seja configurado no jogo e depois consiga retornar ao finalizar o programa
+	*/
 		
-		/* armazena todos os valores atuais do console 
-		assim como sua posicao maxima, para que o console de usuario 
-		seja configurado no jogo e depois consiga retornar ao finalizar o programa
-		*/
-		
-		console->dimensao_inicial = getPosicaoJanela();	
-		console->dimensao_maxima = MaxDimensaoJanela();
-		console->posicao_inicial = getPosicaoJanela();
-
-		/* em alguns casos os valores iniciais da janela podem vir negativos 
-			caso isso ocorra o programa ira determinar um valor valido para os parametros 
-			para que quando forem utilizados eles consigam gerar um retorno
-		*/
-		if(console->dimensao_inicial.X <= 0 || console->dimensao_inicial.Y <= 0)
-			{
-				console->dimensao_inicial = console->dimensao_maxima; 
-			}
-		
-		if(console->posicao_inicial.X < 0 || console->posicao_inicial.Y < 0 )
-		{
-				console->posicao_inicial.X = 0; 
-				console->posicao_inicial.Y = 0;
-		}
-		
-		/* configura a tela do usuario */ 
-		setPosicaoJanela(0,0);
-		setDimensaoJanela(console->dimensao_maxima.X, console->dimensao_maxima.Y);
-		setEstadoBarraTarefas(INVISIVEL);
-		setTituloConsole(TITULO);	
-		setCursorStatus(DESLIGAR);
-		
-	}else{
-		setPosicaoJanela(console->posicao_inicial.X,console->posicao_inicial.Y);
-		setDimensaoJanela(console->dimensao_inicial.X,console->dimensao_inicial.Y);
-		setEstadoBarraTarefas(VISIVEL);
-		setCursorStatus(LIGAR);
+	console->dimensao_inicial = tamanhoJanelaConsole();	
+	console->dimensao_maxima = MaxDimensaoJanela();
+	console->posicao_inicial = getPosicaoJanela();
+	
+	/* em alguns casos os valores iniciais da janela podem vir negativos 
+		caso isso ocorra o programa ira determinar um valor valido para os parametros 
+		para que quando forem utilizados eles consigam gerar um retorno
+	*/
+	
+	/*
+	if(console->dimensao_inicial.X <= 0 || console->dimensao_inicial.Y <= 0)
+	{
+		console->dimensao_inicial = console->dimensao_maxima; 
 	}
+		
+	if(console->posicao_inicial.X < 0 || console->posicao_inicial.Y < 0 )
+	{
+		console->posicao_inicial.X = 0; 
+		console->posicao_inicial.Y = 0;
+	}*/
+		
+	/* configura a tela do usuario */ 
+	setPosicaoJanela(0,0);
+	setDimensaoJanela(console->dimensao_maxima.X, console->dimensao_maxima.Y);
+	setEstadoBarraTarefas(INVISIVEL);
+	setTituloConsole(TITULO);	
+	setCursorStatus(DESLIGAR);
+		
 }
 
 
