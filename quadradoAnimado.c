@@ -24,23 +24,30 @@
 	*/
 void inicia_jogo()
 {	
-	int cor; 
+	int cor, direcao; 
 	JANELA *Janela, refJanela;
 	CONSOLE *monitor , Pointer_console;
+	QUADRADO *quadrado, refquad;
 	
 	monitor = &Pointer_console;
 	Janela = &refJanela;
+	quadrado = &refquad;
+	quadrado = &refquad;
 	
 	srand(time(NULL));
 	
 	cor = rand() % 15 + 1;
-	
-	set_ambiente(monitor, 1);
+	direcao = rand() % 3 ;
+	set_ambiente(monitor, ATIVAR);
 	
 	cria_ponto(Janela, *monitor);
 	
+	cria_quadrado(quadrado);
+	
 	gerencia_janela(Janela, cor, *monitor);
-
+	
+	movimenta_quadrado(quadrado, *Janela, direcao);
+	
 	depuracao(*Janela, *monitor, DEPURACAO);
 	
 	textbackground(0);
@@ -48,19 +55,19 @@ void inicia_jogo()
 	clrscr();
 	
 	gotoxy(1,1);
-	set_ambiente(monitor, 0);
+	set_ambiente(monitor, DESATIVAR);
 
 }
 
-	/*
-	|---------------  Cria ponto ---------------------------|
+/*	|---------------  Cria ponto ---------------------------|
 	|	 Para que possa ser criado as zonas de impacto		|
 	|	do quadrado interno, ele seguira refernecia por 3 	|
 	|	pontos princiapais(centro e diagonais) essa funcao 	|
 	|	tem o objetivo de criar esses valores inicias para 	|
 	|	o programa trabalhar								|
 	|-------------------------------------------------------|
-	*/
+*/
+
 void cria_ponto(JANELA *Janela,CONSOLE console)
 {
 	
@@ -82,15 +89,25 @@ void cria_ponto(JANELA *Janela,CONSOLE console)
 	Janela->centro->Y = (Janela->ponto1->Y + (Janela->coluna/2)) + (console.dimensao_maxima.Y/2)/2;
 }
 
-	/*
-	|---------------  Gerencia Janela ----------------------|
+void cria_quadrado(QUADRADO *quadrado)
+{
+	
+	quadrado->centro->X = Janela->centro->X;
+	quadrado->centro->Y = Janela->centro->Y;
+	
+	quadrado->cor = 4;
+	
+	imprime_quadrado(*quadrado,)
+}
+/*	|---------------  Gerencia Janela ----------------------|
 	|	 Cria a janela principal.							|	
 	|	A funcao utiliza os 3 pontos da estrutura PONTO 	|
 	|	como referencia, trocando a cor do fundo 		 	|
 	|	caracter por caracter conectando os  pontos das  	|
 	|	diagonais											|
 	|-------------------------------------------------------|
-	*/
+*/
+
 void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
 {
 	int i, tamanho, RefX, RefY; 
@@ -126,19 +143,119 @@ void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
 		putchar(32);
 	}
 	
-	gotoxy(Janela->centro->X,Janela->centro->Y);
+	Janela->ponto1->X += RefX;
+	Janela->ponto1->Y += RefY;
+	
+	Janela->ponto2->X += RefX;
+	Janela->ponto2->Y += RefY;
+	
+	Janela->centro->X += RefX;
+	Janela->centro->Y += RefY;
+	
 }
 
-	/*
-	|---------------  Set ambiente -------------------------|
-	|	 Configura o console inicial ao mesmo tempo			|	
-	|	ele armazena os dados para que a janela retorne		|
-	|	a como estava no inicio do programa 	 		 	|
-	|	 Essa funcao tem tanto a atividade de configurar   	|
-	|	o console inicial como de restaurar as configurações|
-	|	que estavam anteriormente							|
-	|-------------------------------------------------------|
-	*/
+void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
+{
+	int i, j; 
+	
+	if(funcao)
+	{
+		textcolor(quadrado.cor);
+		/* imprima como se fosse uma matriz*/
+		for(i = 0; i < 3 ;++i)
+		{
+			for(j = 0; j < 3; ++j)
+			{
+				gotoxy((quadrado.centro->X - 1) +j, (quadrado.centro->Y - 1) + i);
+				putchar(42);
+			}
+		}
+	}
+	else
+	{
+		textbackground(BLACK);
+		textcolor(BLACK);
+		/* imprima como se fosse uma matriz*/
+		for(i = 0; i < 3; ++i)
+		{
+			for(j = 0; j < 3; ++j)
+			{
+				gotoxy((quadrado.centro->X - 1) +j, (quadrado.centro->Y - 1) + i);
+				putchar(32);
+			}
+		}
+	}
+}
+
+/* ----------------implementando o movimenta janela ---------------------*/ 
+void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
+{	
+	switch (direcao)
+	{
+		/* case (0) */ 
+		case (CIMA):
+
+			while((quadrado->centro->Y - 2) > janela.ponto1->Y)
+			{
+				imprime_quadrado(*quadrado, ATIVAR);
+				sleep(1);
+				imprime_quadrado(*quadrado, DESATIVAR);
+				quadrado->centro->Y = (quadrado->centro->Y) - 1 ;
+			}
+			
+			movimenta_quadrado(quadrado, janela, BAIXO);
+			break;
+		/* case (2) */ 
+		case (BAIXO):
+
+			while((quadrado->centro->Y + 2) < janela.ponto2->Y)
+			{
+				imprime_quadrado(*quadrado, ATIVAR);
+				sleep(1);
+				imprime_quadrado(*quadrado, DESATIVAR);
+				quadrado->centro->Y = (quadrado->centro->Y) + 1 ;
+			}
+			
+			movimenta_quadrado(quadrado, janela, CIMA);
+			break;
+		/* case (3) */ 
+		case (ESQUERDA):
+
+			while((quadrado->centro->X - 2) > janela.ponto1->X)
+			{
+				imprime_quadrado(*quadrado, ATIVAR);
+				sleep(1);
+				imprime_quadrado(*quadrado, DESATIVAR);
+				quadrado->centro->X = (quadrado->centro->X) - 1 ;
+			}
+			
+			movimenta_quadrado(quadrado, janela, DIREITA);
+			
+			break;
+		/* case (1) */ 
+		case (DIREITA):
+			while((quadrado->centro->X + 2) < janela.ponto2->X)
+			{
+				imprime_quadrado(*quadrado, ATIVAR);
+				sleep(1);
+				imprime_quadrado(*quadrado, DESATIVAR);
+				quadrado->centro->X = (quadrado->centro->X) + 1 ;
+			}
+			
+			movimenta_quadrado(quadrado, janela, ESQUERDA);
+			break;
+	}
+}	
+	
+/*		|---------------  Set ambiente -------------------------|
+		|	 Configura o console inicial ao mesmo tempo			|	
+		|	ele armazena os dados para que a janela retorne		|
+		|	a como estava no inicio do programa 	 		 	|
+		|	 Essa funcao tem tanto a atividade de configurar   	|
+		|	o console inicial como de restaurar as configurações|
+		|	que estavam anteriormente							|
+		|-------------------------------------------------------|
+*/
 
 void set_ambiente(CONSOLE *console, int status )
 {
@@ -173,22 +290,23 @@ void set_ambiente(CONSOLE *console, int status )
 		setDimensaoJanela(console->dimensao_maxima.X, console->dimensao_maxima.Y);
 		setEstadoBarraTarefas(INVISIVEL);
 		setTituloConsole(TITULO);	
+		setCursorStatus(DESLIGAR);
 		
 	}else{
 		setPosicaoJanela(console->posicao_inicial.X,console->posicao_inicial.Y);
 		setDimensaoJanela(console->dimensao_inicial.X,console->dimensao_inicial.Y);
 		setEstadoBarraTarefas(VISIVEL);
+		setCursorStatus(LIGAR);
 	}
 }
 
 
-/*
-	|---------------  depuracao   --------------------------|
+/*	|---------------  depuracao   --------------------------|
 	|	 Não utilizado na versão final 						|
 	|	serve apenas para imprimir o valor das variaveis 	|
 	|	quando necessario									|
 	|-------------------------------------------------------|
-	*/
+*/
 	
 void depuracao(JANELA Janela, CONSOLE console, int depuracao)
 {

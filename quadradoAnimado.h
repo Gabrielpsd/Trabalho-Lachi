@@ -6,18 +6,30 @@
 #define TITULO "Quadrado Animado"  
 
 /* --------------------------- Declaracoes de variaveis e constantes ------------------------------------*/ 
-typedef enum{
+typedef enum
+{
 	DESATIVAR,
 	ATIVAR
 }ATIVIDADE;
 
-typedef struct _tela{
+typedef enum
+{	
+	CIMA,
+	DIREITA,
+	BAIXO,
+	ESQUERDA,
+}DIRECAO;
+
+
+typedef struct _tela
+{
 	COORD dimensao_inicial;
 	COORD posicao_inicial;
 	COORD dimensao_maxima;
 }CONSOLE;
 
-typedef struct _Janela{
+typedef struct _Janela
+{
 	COORD *ponto1, ref1;
 	COORD *ponto2, ref2;
 	COORD *centro, refC;
@@ -37,7 +49,7 @@ typedef struct _Janela{
 
 typedef struct _quadrado{
 	int cor;
-	int centro;
+	COORD *centro , refCentro;
 }QUADRADO;
 
 /* -------------------------------------FIM DAS DECLARAÇÕES DAS VARIAVEIS E COSNTANTES-------------------*/ 
@@ -54,13 +66,23 @@ typedef struct _quadrado{
 void inicia_jogo();
 
 	/*
+	|---------------  Cria quadrado ------------------------|
+	|	 O qudrado central tera uma configuração  			|
+	|	padrão, essa funcção serve para colocar 	  		|
+	|	a configuração padrão  					 			|
+	|-------------------------------------------------------|
+	*/
+	
+void cria_quadrado(QUADRADO *, ATIVIDADE);
+
+	/*
 	|---------------  cria ponto ---------------------------|
 	|	ira criar os pontos principais a qual 				|
 	|	o programa ira utilizar como referencia para 		|
 	|	realizar as configurações e movimentações 			|
 	|-------------------------------------------------------|
 	*/
-	
+
 void cria_ponto(JANELA *, CONSOLE);
 
 
@@ -81,7 +103,9 @@ void gerencia_janela(JANELA *, int,CONSOLE);
 	|---------------------------------------------------|
 	*/
 	
-void movimenta_quadrado(QUADRADO *, JANELA);
+void imprime_quadrado(QUADRADO, int);
+
+void movimenta_quadrado(QUADRADO *, JANELA, DIRECAO);
 
 	/*
 	|---------------  Ambiente -------------------------|
