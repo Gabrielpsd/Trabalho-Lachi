@@ -26,13 +26,14 @@ typedef struct _tela
 	COORD dimensao_inicial;
 	COORD posicao_inicial;
 	COORD dimensao_maxima;
+	
 }CONSOLE;
 
 typedef struct _Janela
 {
-	COORD *ponto1, ref1;
-	COORD *ponto2, ref2;
-	COORD *centro, refC;
+	COORD ponto1;
+	COORD ponto2;
+	COORD centro;
 	
 	int linha, coluna;
 	
@@ -49,7 +50,7 @@ typedef struct _Janela
 
 typedef struct _quadrado{
 	int cor;
-	COORD *centro , refCentro;
+	COORD centro;
 }QUADRADO;
 
 /* -------------------------------------FIM DAS DECLARAÇÕES DAS VARIAVEIS E COSNTANTES-------------------*/ 
@@ -73,7 +74,7 @@ void inicia_jogo();
 	|-------------------------------------------------------|
 	*/
 	
-void cria_quadrado(QUADRADO *, ATIVIDADE);
+void cria_quadrado(QUADRADO *, JANELA);
 
 	/*
 	|---------------  cria ponto ---------------------------|
@@ -103,7 +104,7 @@ void gerencia_janela(JANELA *, int,CONSOLE);
 	|---------------------------------------------------|
 	*/
 	
-void imprime_quadrado(QUADRADO, int);
+void imprime_quadrado(QUADRADO, ATIVIDADE);
 
 void movimenta_quadrado(QUADRADO *, JANELA, DIRECAO);
 

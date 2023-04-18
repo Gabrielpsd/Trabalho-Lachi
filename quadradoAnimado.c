@@ -32,17 +32,15 @@ void inicia_jogo()
 	monitor = &Pointer_console;
 	Janela = &refJanela;
 	quadrado = &refquad;
-	quadrado = &refquad;
 	
 	srand(time(NULL));
 	
 	cor = rand() % 15 + 1;
 	direcao = rand() % 3 ;
+	
 	set_ambiente(monitor, ATIVAR);
-	
 	cria_ponto(Janela, *monitor);
-	
-	cria_quadrado(quadrado);
+	cria_quadrado(quadrado, *Janela);
 	
 	gerencia_janela(Janela, cor, *monitor);
 	
@@ -69,35 +67,30 @@ void inicia_jogo()
 */
 
 void cria_ponto(JANELA *Janela,CONSOLE console)
-{
-	
-	Janela->ponto1 = &(Janela->ref1);
-	Janela->ponto2 = &(Janela->ref2);
-	Janela->centro = &(Janela->refC);
+{	
 	
 	Janela->linha = 80;
 	Janela->coluna = 20;
 	
 	
-	Janela->ponto1->X = 5;
-	Janela->ponto1->Y = 5;
+	Janela->ponto1.X = (console.dimensao_maxima.X/2)/2;
+	Janela->ponto1.Y = (console.dimensao_maxima.Y/2)/2;
 	
-	Janela->ponto2->X = Janela->ponto1->X + Janela->linha ;
-	Janela->ponto2->Y = Janela->ponto1->Y + Janela->coluna ;
+	Janela->ponto2.X = Janela->ponto1.X + Janela->linha ;
+	Janela->ponto2.Y = Janela->ponto1.Y + Janela->coluna ;
 	
-	Janela->centro->X = (Janela->ponto1->X + (Janela->linha/2)) + (console.dimensao_maxima.X/2)/2;
-	Janela->centro->Y = (Janela->ponto1->Y + (Janela->coluna/2)) + (console.dimensao_maxima.Y/2)/2;
+	Janela->centro.X = Janela->ponto1.X + Janela->linha/2;
+	Janela->centro.Y = Janela->ponto1.Y  + Janela->coluna/2;
 }
 
-void cria_quadrado(QUADRADO *quadrado)
+void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 {
-	
-	quadrado->centro->X = Janela->centro->X;
-	quadrado->centro->Y = Janela->centro->Y;
+	quadrado->centro.X = Janela.centro.X;
+	quadrado->centro.Y = Janela.centro.Y;
 	
 	quadrado->cor = 4;
 	
-	imprime_quadrado(*quadrado,)
+	imprime_quadrado(*quadrado,ATIVAR);
 }
 /*	|---------------  Gerencia Janela ----------------------|
 	|	 Cria a janela principal.							|	
@@ -110,51 +103,41 @@ void cria_quadrado(QUADRADO *quadrado)
 
 void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
 {
-	int i, tamanho, RefX, RefY; 
+	int i; 
 	clrscr();
 	textbackground(9);
 	
 	/* para criar a janela sera criada quatro funcoes que tem como controle o tamanho da linha e da coluna
 	essas funcoes serao 4 for's para criar as linhas e as colunas
 	*/
-	RefX = (console.dimensao_maxima.X/2)/2;
-	RefY = (console.dimensao_maxima.Y/2)/2; 
 		
 	for(i = 0; i < Janela->linha; ++i)
 	{
 		/* linha superior */ 
-		gotoxy(RefX + Janela->ponto1->X + i,RefY + Janela->ponto1->Y);
+		gotoxy(Janela->ponto1.X + i,Janela->ponto1.Y);
 		putchar(32);
 		
 		/*linha inferior*/
-		gotoxy(RefX + Janela->ponto1->X+i,RefY +Janela->ponto2->Y);
+		gotoxy(Janela->ponto1.X+i,Janela->ponto2.Y);
 		putchar(32);
 	
 	}
-
+	
 	for(i = 0; i <= Janela->coluna; ++i)
 	{
 		/* coluna horizontal da esquerda */ 
-		gotoxy(RefX + Janela->ponto1->X,RefY +Janela->ponto1->Y + i);
+		gotoxy(Janela->ponto1.X,Janela->ponto1.Y + i);
 		putchar(32);
 		
 		/*coluna horizontal direita */ 
-		gotoxy(RefX + Janela->ponto2->X,RefY +Janela->ponto1->Y+i);
+		gotoxy(Janela->ponto2.X,Janela->ponto1.Y+i);
 		putchar(32);
 	}
 	
-	Janela->ponto1->X += RefX;
-	Janela->ponto1->Y += RefY;
-	
-	Janela->ponto2->X += RefX;
-	Janela->ponto2->Y += RefY;
-	
-	Janela->centro->X += RefX;
-	Janela->centro->Y += RefY;
 	
 }
 
-void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
+void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 {
 	int i, j; 
 	
@@ -166,7 +149,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
 		{
 			for(j = 0; j < 3; ++j)
 			{
-				gotoxy((quadrado.centro->X - 1) +j, (quadrado.centro->Y - 1) + i);
+				gotoxy((quadrado.centro.X - 1) +j, (quadrado.centro.Y - 1) + i);
 				putchar(42);
 			}
 		}
@@ -180,7 +163,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
 		{
 			for(j = 0; j < 3; ++j)
 			{
-				gotoxy((quadrado.centro->X - 1) +j, (quadrado.centro->Y - 1) + i);
+				gotoxy((quadrado.centro.X - 1) +j, (quadrado.centro.Y - 1) + i);
 				putchar(32);
 			}
 		}
@@ -190,17 +173,18 @@ void imprime_quadrado(QUADRADO quadrado, ATIV funcao)
 /* ----------------implementando o movimenta janela ---------------------*/ 
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 {	
+	
 	switch (direcao)
 	{
 		/* case (0) */ 
 		case (CIMA):
 
-			while((quadrado->centro->Y - 2) > janela.ponto1->Y)
+			while((quadrado->centro.Y - 2) > janela.ponto1.Y)
 			{
-				imprime_quadrado(*quadrado, ATIVAR);
+				imprime_quadrado(*quadrado, 1);
 				sleep(1);
-				imprime_quadrado(*quadrado, DESATIVAR);
-				quadrado->centro->Y = (quadrado->centro->Y) - 1 ;
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.Y = (quadrado->centro.X) - 1 ;
 			}
 			
 			movimenta_quadrado(quadrado, janela, BAIXO);
@@ -208,12 +192,12 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 		/* case (2) */ 
 		case (BAIXO):
 
-			while((quadrado->centro->Y + 2) < janela.ponto2->Y)
+			while((quadrado->centro.Y + 2) < janela.ponto2.Y)
 			{
-				imprime_quadrado(*quadrado, ATIVAR);
+				imprime_quadrado(*quadrado, 1);
 				sleep(1);
-				imprime_quadrado(*quadrado, DESATIVAR);
-				quadrado->centro->Y = (quadrado->centro->Y) + 1 ;
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.Y = (quadrado->centro.Y) + 1 ;
 			}
 			
 			movimenta_quadrado(quadrado, janela, CIMA);
@@ -221,12 +205,12 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 		/* case (3) */ 
 		case (ESQUERDA):
 
-			while((quadrado->centro->X - 2) > janela.ponto1->X)
+			while((quadrado->centro.X - 2) > janela.ponto1.X)
 			{
-				imprime_quadrado(*quadrado, ATIVAR);
+				imprime_quadrado(*quadrado, 1);
 				sleep(1);
-				imprime_quadrado(*quadrado, DESATIVAR);
-				quadrado->centro->X = (quadrado->centro->X) - 1 ;
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.X = (quadrado->centro.X) - 1 ;
 			}
 			
 			movimenta_quadrado(quadrado, janela, DIREITA);
@@ -234,12 +218,12 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 			break;
 		/* case (1) */ 
 		case (DIREITA):
-			while((quadrado->centro->X + 2) < janela.ponto2->X)
+			while((quadrado->centro.X + 2) < janela.ponto2.X)
 			{
-				imprime_quadrado(*quadrado, ATIVAR);
+				imprime_quadrado(*quadrado, 1);
 				sleep(1);
-				imprime_quadrado(*quadrado, DESATIVAR);
-				quadrado->centro->X = (quadrado->centro->X) + 1 ;
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.X = (quadrado->centro.X) + 1 ;
 			}
 			
 			movimenta_quadrado(quadrado, janela, ESQUERDA);
@@ -326,14 +310,14 @@ void depuracao(JANELA Janela, CONSOLE console, int depuracao)
 	
 	printf("--------------- Dados da janela    --------------------\n");
 	
-	printf("P1 X - %d \n",Janela.ponto1->X);
-	printf("P1 Y - %d \n",Janela.ponto1->Y);
+	printf("P1 X - %d \n",Janela.ponto1.X);
+	printf("P1 Y - %d \n",Janela.ponto1.Y);
 	
-	printf("P2 X - %d \n",Janela.ponto2->X);
-	printf("P2 Y - %d \n",Janela.ponto2->Y);
+	printf("P2 X - %d \n",Janela.ponto2.X);
+	printf("P2 Y - %d \n",Janela.ponto2.Y);
 	
-	printf("CENTRO X - %d \n",Janela.centro->X);
-	printf("CENTRO Y - %d \n",Janela.centro->Y);
+	printf("CENTRO X - %d \n",Janela.centro.X);
+	printf("CENTRO Y - %d \n",Janela.centro.Y);
 	
 	
 	printf("linha- %d \n",Janela.linha);
