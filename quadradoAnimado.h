@@ -29,6 +29,7 @@ typedef struct _tela
 	
 }CONSOLE;
 
+
 typedef struct _Janela
 {
 	COORD ponto1;
@@ -49,8 +50,9 @@ typedef struct _Janela
 	*/
 
 typedef struct _quadrado{
-	int cor;
-	COORD centro;
+	int cor,direcao;
+	float velocidade;
+	COORD centro; 
 }QUADRADO;
 
 /* -------------------------------------FIM DAS DECLARAÇÕES DAS VARIAVEIS E COSNTANTES-------------------*/ 
@@ -86,7 +88,7 @@ void cria_quadrado(QUADRADO *, JANELA);
 
 void cria_ponto(JANELA *, CONSOLE);
 
-
+void imprime_info(QUADRADO);
 	/*
 	|---------------  Janela ---------------------------|
 	|	Ira criar a janela principal do jogo			|
@@ -116,8 +118,6 @@ void movimenta_quadrado(QUADRADO *, JANELA, DIRECAO);
 	|---------------------------------------------------|
 	*/
 void set_ambiente(CONSOLE *, int);
-
-
 
 void depuracao(JANELA, CONSOLE,int);
 

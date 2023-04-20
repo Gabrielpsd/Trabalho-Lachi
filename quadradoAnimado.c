@@ -26,10 +26,10 @@ void inicia_jogo()
 {	
 	int cor, direcao; 
 	JANELA *Janela, refJanela;
-	CONSOLE *monitor , Pointer_console;
+	CONSOLE *console , Pointer_console;
 	QUADRADO *quadrado, refquad;
 	
-	monitor = &Pointer_console;
+	console = &Pointer_console;
 	Janela = &refJanela;
 	quadrado = &refquad;
 	
@@ -38,22 +38,21 @@ void inicia_jogo()
 	cor = rand() % 15 + 1;
 	direcao = rand() % 3 ;
 	
-	set_ambiente(monitor, ATIVAR);
-	cria_ponto(Janela, *monitor);
+	set_ambiente(console, ATIVAR);
+	cria_ponto(Janela, *console);
 	cria_quadrado(quadrado, *Janela);
-	
-	gerencia_janela(Janela, cor, *monitor);
-	
+	gerencia_janela(Janela, cor, *console);
+	imprime_info(*quadrado);
 	movimenta_quadrado(quadrado, *Janela, direcao);
 	
-	depuracao(*Janela, *monitor, DEPURACAO);
+	depuracao(*Janela, *console, DEPURACAO);
 	
 	textbackground(0);
 	getchar();
 	clrscr();
 	
 	gotoxy(1,1);
-	set_ambiente(monitor, DESATIVAR);
+	set_ambiente(console, DESATIVAR);
 
 }
 
@@ -89,6 +88,9 @@ void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 	quadrado->centro.Y = Janela.centro.Y;
 	
 	quadrado->cor = 4;
+	
+	quadrado->velocidade = 0.2;
+	quadrado->direcao = 1;
 	
 	imprime_quadrado(*quadrado,ATIVAR);
 }
@@ -137,6 +139,42 @@ void gerencia_janela(JANELA *Janela, int cor, CONSOLE console)
 	
 }
 
+void imprime_info(QUADRADO quadrado){
+		int TAMANHO;
+		
+		TAMANHO = 10;
+		textbackground(BLACK);
+		textcolor(RED);
+		
+		gotoxy(80,2);
+		printf("QUADRADO ANIMADO!!");
+		
+		gotoxy(TAMANHO,4);
+		printf("Direcao atual: ");
+		
+		switch(quadrado.direcao)
+		{
+			case (CIMA):
+				printf("Cima  ");
+				break;
+			case (DIREITA):
+				printf("Direita  ");
+				break;
+			case(BAIXO):
+				printf("Baixo  ");
+				break;
+			case(ESQUERDA):
+				printf("Esquerda");
+				break;
+		}
+		
+		gotoxy(TAMANHO + 40,4);
+		printf("Tecla digitada: ");
+		
+		gotoxy(TAMANHO + 90,4);
+		printf("Velocidade atual: %.2f ",quadrado.velocidade);
+}
+
 void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 {
 	int i, j; 
@@ -173,29 +211,35 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 /* ----------------implementando o movimenta janela ---------------------*/ 
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 {	
+	float controle = (2.0 - quadrado->velocidade)*100;
+		
 	
 	switch (direcao)
 	{
 		/* case (0) */ 
 		case (CIMA):
-
+			quadrado->direcao = direcao;
+			imprime_info(*quadrado);
+			
 			while((quadrado->centro.Y - 2) > janela.ponto1.Y)
 			{
 				imprime_quadrado(*quadrado, 1);
-				sleep(1);
+				Sleep(controle);
 				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.Y = (quadrado->centro.X) - 1 ;
+				quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
 			}
 			
 			movimenta_quadrado(quadrado, janela, BAIXO);
 			break;
 		/* case (2) */ 
 		case (BAIXO):
-
+			quadrado->direcao = direcao;
+			imprime_info(*quadrado);
+			
 			while((quadrado->centro.Y + 2) < janela.ponto2.Y)
 			{
 				imprime_quadrado(*quadrado, 1);
-				sleep(1);
+				Sleep(controle);
 				imprime_quadrado(*quadrado, 0);
 				quadrado->centro.Y = (quadrado->centro.Y) + 1 ;
 			}
@@ -204,11 +248,13 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 			break;
 		/* case (3) */ 
 		case (ESQUERDA):
-
+			quadrado->direcao = direcao;
+			imprime_info(*quadrado);
+			
 			while((quadrado->centro.X - 2) > janela.ponto1.X)
 			{
 				imprime_quadrado(*quadrado, 1);
-				sleep(1);
+				Sleep(controle);
 				imprime_quadrado(*quadrado, 0);
 				quadrado->centro.X = (quadrado->centro.X) - 1 ;
 			}
@@ -218,10 +264,12 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela, DIRECAO direcao)
 			break;
 		/* case (1) */ 
 		case (DIREITA):
+			quadrado->direcao = direcao;
+			imprime_info(*quadrado);
 			while((quadrado->centro.X + 2) < janela.ponto2.X)
 			{
 				imprime_quadrado(*quadrado, 1);
-				sleep(1);
+				Sleep(controle);
 				imprime_quadrado(*quadrado, 0);
 				quadrado->centro.X = (quadrado->centro.X) + 1 ;
 			}
