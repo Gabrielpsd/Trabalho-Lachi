@@ -23,6 +23,6 @@ int main(int argc, char *argv[])
 	argv = argv;
 	
 	inicia_jogo();
-	
+
 	return 0;
 }
