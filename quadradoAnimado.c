@@ -9,12 +9,10 @@
 #include "console_v1.5.4.h" /* COORD , outra soncole*/ 
 #include "quadradoAnimado.h" /* cria_janela() */
 
-#define DEPURACAO 0
 #define REFERENCIA 5
 
 
-	/*
-	|---------------  INICIO ---------------------------|
+/*	|---------------  INICIO ---------------------------|
 	|	 Unica funcao fora da ordem alfabetica 			|
 	|	por ser a principal do programa, ela aparecera	|
 	|	em primeiro;									|
@@ -22,7 +20,7 @@
 	|	 Atraves dessa funcao que o programa executa as |
 	|	chamadas para as outras funcoes do programa		|
 	|---------------------------------------------------|
-	*/
+*/
 	
 void inicia_jogo()
 {	
@@ -41,9 +39,8 @@ void inicia_jogo()
 	set_ambiente(console, ATIVAR);
 	cria_ponto(Janela, *console);
 	cria_quadrado(quadrado, *Janela);
-	gerencia_janela(Janela, *console);
+	gerencia_janela(Janela);
 	imprime_info(*quadrado);
-	//movimenta_quadrado(quadrado, *Janela);
 	depuracao(*Janela, *console, DEPURACAO);
 	
 	gerencia_programa( Janela,  console,  quadrado);
@@ -76,6 +73,15 @@ void cria_ponto(JANELA *Janela,CONSOLE console)
 	Janela->centro.Y = Janela->ponto1.Y  + Janela->linha/2;
 }
 
+/*	|---------------  Cria quadrado  -----------------------|
+	|	 	Funcao ira definir os valores padrao do quadrado|
+	|	interno, essa funcao so sera chamada na 			|
+	|	inicializaçao do programa, a partir dai as 			|
+	|	alterações na estrutura sera feita por outras 		|
+	|	funcoes;												|
+	|-------------------------------------------------------|
+*/
+
 void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 {
 	quadrado->centro.X = Janela.centro.X;
@@ -100,7 +106,7 @@ void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 	|-------------------------------------------------------|
 */
 
-void gerencia_janela(JANELA *Janela, CONSOLE console)
+void gerencia_janela(JANELA *Janela)
 {
 	int i; 	
 	clrscr();
@@ -135,14 +141,26 @@ void gerencia_janela(JANELA *Janela, CONSOLE console)
 	
 }
 
+/*	|---------------  Gerencia Programa --------------------|
+	|		Essa funcao é a funcao que realiza a leitura das| 
+	|	teclas digitadas pelo usuario, como a cada interação|
+	|	o programa ira realizar a verficação e ,caso 		|
+	|	necessario, realizar a chama de outras funcoes, ele |	
+	|	recebe como parametro todas as estruturas			|
+	|-------------------------------------------------------|
+*/
+
 void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 {	
 	EVENTO evento; 
+	console = console;
 	
 	do
 	{
+		
 		if(hit(KEYBOARD_HIT))
 		{
+			timeBeginPeriod(1);
 			evento = Evento();
 			
 			if(evento.tipo_evento & KEY_EVENT)
@@ -153,7 +171,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 					{
 						/*-- aumenta a velocidade do quadrado interno -- */
 							case F2:
-								//quadrado->velocidade += 100;
+								
 								quadrado->texto = "F2";
 								quadrado->velocidade -= 0.1;
 								break;
@@ -170,13 +188,13 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								
 							
 							case SETA_PARA_DIREITA:
-								//quadrado->direcao = DIREITA;
+							
 								quadrado->texto = "Seta Direita";
 								quadrado->direcao = DIREITA;
 								break;
 								
 							case SETA_PARA_ESQUERDA:
-								//quadrado->direcao = ESQUERDA;
+							
 								quadrado->texto = "Seta Esquerda";
 								quadrado->direcao = ESQUERDA;
 								break;
@@ -187,7 +205,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								break;
 								
 							case SETA_PARA_CIMA:
-								//quadrado->direcao = CIMA;
+							
 								quadrado->texto = "Seta Cima";
 								quadrado->direcao = CIMA;
 								break;
@@ -266,17 +284,30 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								break;
 					}
 					
-					gerencia_janela(janela, *console);
+					gerencia_janela(janela);
 					imprime_info(*quadrado);
 				
 				}
 			}
+		timeEndPeriod(1);
 		}
+		movimenta_quadrado(quadrado, *janela);
 		
-		movimenta_quadrado2(quadrado, *janela);
 	}while(1);
 }
 
+/*	|---------------  imprime info -------------------------|
+	|	 Funcao ira realizar a impressao das informacoes 	|
+	|	solicitadas no exercicio, essas informações estao	|
+	|	contidas dentro da estrutura QUADRADO, a funcao 	|
+	|	apenas lea informação que esta la dentro e 			|
+	|	imprime o valor, tambem dentro do quadrado			|
+	|	ha um coord que serve como referencia para 			|
+	|	posicionar os textos na tela do usuario, essas 		|
+	|	posicoes sao criadas no inicio do programa e nao 	|
+	|	sofrem alteracao com o decorrer do mesmo;		|
+	|-------------------------------------------------------|
+*/
 void imprime_info(QUADRADO quadrado)
 {
 		
@@ -312,6 +343,22 @@ void imprime_info(QUADRADO quadrado)
 		printf("Velocidade atual: %.2f ",quadrado.velocidade);
 }
 
+/*	|----------------  Imprime Quadrado --------------------|
+	|	 	A funcao recebe o quadrado como referencia, 	|
+	|	a partir dai ele pega o ponto centro e atraves desse| 
+	|	ponto ele realiza as operacoes, a cor dos caracteres|
+	|	e a posicao de referencia estao contidas dentro da 	|
+	|	estrutura;											|
+	|		A funcao recebe o parametro enum que serve para |
+	|	imprimir ou apagar o quadrado da tela, caso o 		|
+	|	parametro seja para ativar ele imprime os dados como| 
+	|	sendo uma matriz; e caso o parametro seja DESTIVAR	|
+	|	ela realiza a exclusao sobreponto as posicoes do 	|
+	|	quadrado porem com um novo caracter 'espaco' com o 	|
+	|	fundo de cor preto;									|
+	|-------------------------------------------------------|
+*/
+
 void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 {
 	int i, j; 
@@ -319,7 +366,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 	if(funcao)
 	{
 		textcolor(quadrado.cor);
-		/* imprima como se fosse uma matriz*/
+		/* imprime como se fosse uma matriz*/
 		for(i = 0; i < 3 ;++i)
 		{
 			for(j = 0; j < 3; ++j)
@@ -333,7 +380,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 	{
 		textbackground(BLACK);
 		textcolor(BLACK);
-		/* imprima como se fosse uma matriz*/
+		/* imprime como se fosse uma matriz*/
 		for(i = 0; i < 3; ++i)
 		{
 			for(j = 0; j < 3; ++j)
@@ -345,77 +392,15 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 	}
 }
 
-/* ----------------implementando o movimenta janela ---------------------*/ 
+/*	|---------------  movimenta quadrado -------------------|
+	|	 A funcao movimenta quadrado, realiza o deslocamento|
+	|	do ponto central do quadrado para uma posicao em 	|
+	|	direcao a que esta contida no campo direcao 		|
+	|	armazenado dentro da propria estrura QAUDRADO 	 	|
+	|-------------------------------------------------------|
+*/
+
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
-{	
-	float controle = (2.0 - quadrado->velocidade)*100;
-		
-	
-	switch (quadrado->direcao)
-	{
-		/* case (0) */ 
-		case (CIMA):
-			imprime_info(*quadrado);
-			
-			while((quadrado->centro.Y - 2) > janela.ponto1.Y)
-			{
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
-			}
-			
-			quadrado->direcao = BAIXO;
-			movimenta_quadrado(quadrado, janela);
-			break;
-		/* case (2) */ 
-		case (BAIXO):
-			imprime_info(*quadrado);
-			
-			while((quadrado->centro.Y + 2) < janela.ponto2.Y)
-			{
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.Y = (quadrado->centro.Y) + 1 ;
-			}
-			
-			quadrado->direcao = CIMA;
-			movimenta_quadrado(quadrado, janela);
-			break;
-		/* case (3) */ 
-		case (ESQUERDA):
-			imprime_info(*quadrado);
-			
-			while((quadrado->centro.X - 2) > janela.ponto1.X)
-			{
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.X = (quadrado->centro.X) - 1 ;
-			}
-			quadrado->direcao = DIREITA;
-			movimenta_quadrado(quadrado, janela);
-			
-			break;
-		/* case (1) */ 
-		case (DIREITA):
-			imprime_info(*quadrado);
-			while((quadrado->centro.X + 2) < janela.ponto2.X)
-			{
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.X = (quadrado->centro.X) + 1 ;
-			}
-			
-			quadrado->direcao = ESQUERDA;
-			movimenta_quadrado(quadrado, janela);
-			break;
-	}
-}	
-	
-void movimenta_quadrado2(QUADRADO *quadrado, JANELA janela)
 {
 	float controle = quadrado->velocidade*1000;
 		
@@ -526,49 +511,5 @@ void set_ambiente(CONSOLE *console, int status )
 		setDimensaoJanela(console->dimensao_inicial.X,console->dimensao_inicial.Y);
 		setEstadoBarraTarefas(VISIVEL);
 		setCursorStatus(LIGAR);
-	}
-}
-
-
-/*	|---------------  depuracao   --------------------------|
-	|	 Não utilizado na versão final 						|
-	|	serve apenas para imprimir o valor das variaveis 	|
-	|	quando necessario									|
-	|-------------------------------------------------------|
-*/
-	
-void depuracao(JANELA Janela, CONSOLE console, int depuracao)
-{
-	textcolor(RED);
-	textbackground(BLACK);
-	if(depuracao){
-	printf("\n--------------- Dados do console --------------------\n");
-	printf("dimnesaoIN X- %d \n",console.dimensao_inicial.X);
-	printf("dimensaoIN Y- %d \n",console.dimensao_inicial.Y);
-		
-	printf("PosicaoIN X- %d \n",console.posicao_inicial.X);
-	printf("PosicaoIN Y- %d \n",console.posicao_inicial.Y);
-	
-	printf("dimnesaoMAX X- %d \n",console.dimensao_maxima.X);
-	printf("dimensaoMAX Y- %d \n",console.dimensao_maxima.Y);
-	printf("--------------------------------------------------------\n");
-	
-	printf("--------------- Dados da janela    --------------------\n");
-	
-	printf("P1 X - %d \n",Janela.ponto1.X);
-	printf("P1 Y - %d \n",Janela.ponto1.Y);
-	
-	printf("P2 X - %d \n",Janela.ponto2.X);
-	printf("P2 Y - %d \n",Janela.ponto2.Y);
-	
-	printf("CENTRO X - %d \n",Janela.centro.X);
-	printf("CENTRO Y - %d \n",Janela.centro.Y);
-	
-	
-	printf("linha- %d \n",Janela.linha);
-	printf("coluna - %d \n",Janela.coluna);
-	
-	
-	printf("------------------------------------------------------------\n");
 	}
 }
