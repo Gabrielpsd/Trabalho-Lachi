@@ -42,7 +42,7 @@ void inicia_jogo()
 	cria_quadrado(quadrado, *Janela);
 	gerencia_janela(Janela, *console);
 	imprime_info(*quadrado);
-	movimenta_quadrado(quadrado, *Janela);
+	//movimenta_quadrado(quadrado, *Janela);
 	depuracao(*Janela, *console, DEPURACAO);
 	
 	gerencia_programa( Janela,  console,  quadrado);
@@ -85,6 +85,7 @@ void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 	quadrado->velocidade = 0.2;
 	quadrado->direcao = 1;
 	imprime_quadrado(*quadrado,ATIVAR);
+	
 }
 
 /*	|---------------  Gerencia Janela ----------------------|
@@ -137,6 +138,8 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 	
 	do
 	{
+		movimenta_quadrado2(quadrado , *janela);
+		
 		if(hit(KEYBOARD_HIT))
 		{
 			evento = Evento();
@@ -150,7 +153,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 						/*-- aumenta a velocidade do quadrado interno -- */
 							case F2:
 								//quadrado->velocidade += 100;
-								quadrado->tecla_pressionada_atual = F2;
+								quadrado->texto = "F2";
 								break;
 							
 						/*-- diminui a velocidade interna do quadrado -- */ 
@@ -159,29 +162,28 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								if(quadrado->velocidade > 2000)
 									quadrado->velocidade -= 100;
 								*/
-								quadrado->tecla_pressionada_atual = F1;	
 								quadrado->texto = "Tecla F1";
 								break;
 								
 							
 							case SETA_PARA_DIREITA:
 								//quadrado->direcao = DIREITA;
-								quadrado->tecla_pressionada_atual = SETA_PARA_DIREITA;
+								quadrado->texto = "Seta Direita";
 								break;
 								
 							case SETA_PARA_ESQUERDA:
 								//quadrado->direcao = ESQUERDA;
-								quadrado->tecla_pressionada_atual = SETA_PARA_ESQUERDA;
+								quadrado->texto = "Seta Esquerda";
 								break;
 								
 							case SETA_PARA_BAIXO:
 								quadrado->direcao = BAIXO;
-								quadrado->tecla_pressionada_atual = SETA_PARA_BAIXO;
+								quadrado->texto = "Seta Baixo";
 								break;
 								
 							case SETA_PARA_CIMA:
 								//quadrado->direcao = CIMA;
-								quadrado->tecla_pressionada_atual = SETA_PARA_CIMA;
+								quadrado->texto = "Seta Cima";
 								break;
 							
 							/*-- aumenta area do quadrado externo para esquerda -- */
@@ -193,7 +195,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 									janela->coluna += ;
 								}
 								*/
-								quadrado->tecla_pressionada_atual = F3;
+								quadrado->texto = "F3";
 								break;
 							
 							/*-- diminui a borda do quadrado para esquerda --*/ 							
@@ -205,62 +207,67 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 									janela->coluna -= 1;
 								}
 							*/
-								quadrado->tecla_pressionada_atual = F4;
+								quadrado->texto = "Tecla F4";
 								break;
 							
 							/*-- aumenta a area do quadrado para direita --*/
 							case F5:
-								quadrado->tecla_pressionada_atual = F5;
+								quadrado->texto = "Tecla F5";
 								break;
 							
 							/*-- diminui a areda do quadrado para direita --*/
 							case F6: 
-								quadrado->tecla_pressionada_atual = F6;
+								quadrado->texto = "Tecla F6";
 								break;
 								
 							/*-- aumenta a areda do quadrado para cima --*/
 							case F7:
-								quadrado->tecla_pressionada_atual = F7;
+								quadrado->texto = "Tecla F7";
 								break;
 							
 							/*-- diminui a area superior --*/ 
 							case F8:
-								quadrado->tecla_pressionada_atual = F8;
+								quadrado->texto = "Tecla F8";
 								break;
 								
 							/*-- auemnta a area para baixo --*/
 							case F9:
-								quadrado->tecla_pressionada_atual = F9;
+								quadrado->texto = "Tecla F9";
 								break;
 								
 							/*--diminui a area para baixo --*/
 							case F10:
-								quadrado->tecla_pressionada_atual = F10;
+							
+								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*--alterna a cor do quadrado --*/
 							case ESPACO:
-								quadrado->tecla_pressionada_atual = ESPACO;
+							
+								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*-- alterna a cor do quadrado --*/
 							case TAB:
-								quadrado->tecla_pressionada_atual = TAB;
+							
+								quadrado->texto = "Tecla TAB";
 								break;
 								
 							/*-- finaliza programa --*/
 							case ESC:
-								quadrado->tecla_pressionada_atual = ESC;
+							
+								quadrado->texto = "Tecla TAB";
 								break;
 					}
 					
 					gerencia_janela(janela, *console);
 					imprime_info(*quadrado);
-					movimenta_quadrado(quadrado, *janela);
+					movimenta_quadrado2(quadrado, *janela);
 				
 				}
 			}
 		}
+		
 	}while(1);
 }
 
@@ -404,6 +411,66 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 	}
 }	
 	
+void movimenta_quadrado2(QUADRADO *quadrado, JANELA janela)
+{
+	float controle = (2.0 - quadrado->velocidade)*100;
+		
+	
+	switch (quadrado->direcao)
+	{
+		/* case (0) */ 
+		case (CIMA):
+			imprime_info(*quadrado);
+			
+				imprime_quadrado(*quadrado, 1);
+				Sleep(controle);
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
+	
+			if(quadrado->centro.Y - 2 == janela.ponto1.Y)
+				quadrado->direcao = BAIXO;
+			
+			break;
+		/* case (2) */ 
+		case (BAIXO):
+			
+			imprime_info(*quadrado);
+			
+				imprime_quadrado(*quadrado, 1);
+				Sleep(controle);
+				imprime_quadrado(*quadrado, 0);
+			
+			if(quadrado->centro.Y + 2 == janela.ponto2.Y)
+				quadrado->direcao = CIMA;
+			
+			break;
+		/* case (3) */ 
+		case (ESQUERDA):
+
+				imprime_quadrado(*quadrado, 1);
+				Sleep(controle);
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.X = (quadrado->centro.X) - 1 ;
+				
+			if(quadrado->centro.X - 2 == janela.ponto1.X)
+				quadrado->direcao = DIREITA;
+			
+			break;
+		/* case (1) */ 
+		case (DIREITA):
+
+				imprime_quadrado(*quadrado, 1);
+				Sleep(controle);
+				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.X = (quadrado->centro.X) + 1 ;
+				
+			if(quadrado->centro.X + 2 == janela.ponto2.X)
+				quadrado->direcao = ESQUERDA;
+			
+			break;
+	}
+}
+
 /*		|---------------  Set ambiente -------------------------|
 		|	 Configura o console inicial ao mesmo tempo			|	
 		|	ele armazena os dados para que a janela retorne		|

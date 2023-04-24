@@ -35,7 +35,7 @@ typedef struct _Janela
 	COORD ponto1;
 	COORD ponto2;
 	COORD centro;
-	
+	COORD texo;
 	int linha, coluna,cor;
 	
 }JANELA;
@@ -50,7 +50,7 @@ typedef struct _Janela
 	*/
 
 typedef struct _quadrado{
-	int cor,tecla_pressionada_atual;
+	int cor;
 	DIRECAO direcao;
 	float velocidade;
 	COORD centro; 
@@ -113,6 +113,8 @@ void gerencia_janela(JANELA *,CONSOLE);
 void imprime_quadrado(QUADRADO, ATIVIDADE);
 
 void movimenta_quadrado(QUADRADO *, JANELA);
+
+void movimenta_quadrado2(QUADRADO *, JANELA);
 
 	/*
 	|---------------  Ambiente -------------------------|
