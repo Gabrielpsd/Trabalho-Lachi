@@ -1,16 +1,20 @@
 /* implementação da biblioteca quadrado_h.h */ 
 
-#include <stdio.h> /*null*/
+#include <stdio.h> /*NULL,printf()*/
 #include <stdlib.h> /* srand(), rand() */ 
 #include <time.h> /* time() */ 
 
 
-#include "conio_v3.2.4.h" /* teXtbackground()*/ 
-#include "console_v1.5.4.h" /* COORD , outra soncole*/ 
+#include "conio_v3.2.4.h" /* textbackground(),gotoxy(),putchar(),textColor() */ 
+#include "console_v1.5.4.h" /* COORD ,getPosicaoJanela(),MaxDimensaoJanela(),getPosicaoJanela(), setPosicaoJanela() 
+setDimensaoJanela() ,setTituloConsole() ,setCursorStatus(),Sleep() */ 
 #include "quadradoAnimado.h" /* cria_janela() */
 
-#define REFERENCIA 5
+/* essa referencia é utilizada para imprimir as infromacoes na tela
+ela somasse a posicao do ponto apenas para poder imprimir em determinado local da tela(no canto inferior esquerdo nesse caso)
+*/
 
+#define REFERENCIA 5
 
 /*	|---------------  INICIO ---------------------------|
 	|	 Unica funcao fora da ordem alfabetica 			|
@@ -41,7 +45,6 @@ void inicia_jogo()
 	cria_quadrado(quadrado, *Janela);
 	gerencia_janela(Janela);
 	imprime_info(*quadrado);
-	depuracao(*Janela, *console, DEPURACAO);
 	
 	gerencia_programa( Janela,  console,  quadrado);
 	
@@ -153,7 +156,9 @@ void gerencia_janela(JANELA *Janela)
 void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 {	
 	EVENTO evento; 
+	BOOLEANO controle;
 	console = console;
+	controle = VERDADEIRO;
 	
 	do
 	{
@@ -213,7 +218,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 							/*-- aumenta area do quadrado externo para esquerda -- */
 							case F3:
 							
-								if(janela->ponto1.X > 1)
+								if(janela->ponto1.X > 0)
 								{
 									janela->ponto1.X -= 1;
 									janela->coluna += 1;
@@ -222,65 +227,96 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								quadrado->texto = "F3";
 								break;
 							
-							/*-- diminui a borda do quadrado para esquerda --*/ 							
+							/*-- diminui a borda do quadrado da esquerda --*/ 							
 							case F4:
-							/*
-								if(janela->ponto1.X < (janela->ponto2.X -3))
+								
+								if(janela->ponto2.X > janela->ponto1.X + 2)
 								{
-									janela->ponto1.X += 1;
+									janela->ponto2.X -= 1;
 									janela->coluna -= 1;
 								}
-							*/
 								quadrado->texto = "Tecla F4";
 								break;
 							
 							/*-- aumenta a area do quadrado para direita --*/
 							case F5:
+								if(janela->coluna < 100 && janela->ponto2.X < (console->dimensao_maxima.X))
+								{
+									janela->coluna += 1;
+									janela->ponto2.X += 1; 
+								}
 								quadrado->texto = "Tecla F5";
 								break;
 							
-							/*-- diminui a areda do quadrado para direita --*/
+							/*-- diminui a area da do quadrado para direita --*/
 							case F6: 
+								
+								if(janela->ponto1.X < janela->ponto2.X - 3)
+								{
+									janela->ponto1.X += 1;
+									janela->coluna -= 1;
+								}
 								quadrado->texto = "Tecla F6";
 								break;
 								
 							/*-- aumenta a areda do quadrado para cima --*/
 							case F7:
+								if(janela->ponto1.Y > (console->dimensao_maxima.Y/4))
+								{
+									janela->ponto1.Y -= 1;
+									janela->linha += 1;
+								}
 								quadrado->texto = "Tecla F7";
 								break;
 							
 							/*-- diminui a area superior --*/ 
 							case F8:
+								if(janela->ponto1.Y < janela->ponto2.Y -3)
+								{
+									janela->ponto1.Y += 1;
+									janela->linha -= 1;
+								}
+								
 								quadrado->texto = "Tecla F8";
 								break;
 								
-							/*-- auemnta a area para baixo --*/
+							/*-- aumenta a area para baixo --*/
 							case F9:
+								if(janela->ponto2.Y < (console->dimensao_maxima.Y*3/4))
+								{
+									janela->ponto2.Y += 1;
+									janela->linha += 1;
+								}
 								quadrado->texto = "Tecla F9";
 								break;
 								
 							/*--diminui a area para baixo --*/
 							case F10:
-							
+								if(janela->ponto2.Y > janela->ponto1.Y + 3)
+								{
+									janela->linha -= 1;
+									janela->ponto2.Y -=1;
+								}
 								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*--alterna a cor do quadrado --*/
 							case ESPACO:
-							
+								janela->cor = rand() % 15;
 								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*-- alterna a cor do quadrado --*/
 							case TAB:
-							
+								quadrado->cor = rand() %15;
 								quadrado->texto = "Tecla TAB";
 								break;
 								
 							/*-- finaliza programa --*/
 							case ESC:
-							
-								quadrado->texto = "Tecla TAB";
+								controle = FALSO;
+								quadrado->texto = "Tecla ESC";
+								
 								break;
 					}
 					
@@ -293,7 +329,13 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 		}
 		movimenta_quadrado(quadrado, *janela);
 		
-	}while(1);
+	}while(controle == VERDADEIRO);
+	
+	set_ambiente(console,DESATIVAR);
+	gotoxy(janela->centro.X-10,janela->centro.Y-2);
+	textcolor(WHITE);
+	printf("FIM DA EXECUCAO DO PROGRAMA");
+	gotoxy(console->dimensao_maxima.X,console->dimensao_maxima.Y);
 }
 
 /*	|---------------  imprime info -------------------------|

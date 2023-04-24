@@ -7,6 +7,7 @@
 
 /* #-#-#-#-#-#-#-#-#-# Declaracoes de variaveis e constantes #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#*/
  
+
  /*	|------------ ATIVIDADE-----------------------------|
 	|		Algumas funcoes tem como parametro ativar 	|
 	|	ou desativar, que cotrolam seu comportamento	|
@@ -21,6 +22,11 @@ typedef enum
 	DESATIVAR,
 	ATIVAR
 }ATIVIDADE;
+
+typedef enum
+{	FALSO,
+	VERDADEIRO
+}BOOLEANO;
 
 /*	|---------------- Direcao  -------------------------|
 	|		Nessa estrutura sera numerada as 			|
