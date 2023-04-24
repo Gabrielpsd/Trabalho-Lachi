@@ -1,6 +1,6 @@
 /* implementação da biblioteca quadrado_h.h */ 
 
-#include <stdio.h> 
+#include <stdio.h> /*null*/
 #include <stdlib.h> /* srand(), rand() */ 
 #include <time.h> /* time() */ 
 
@@ -10,6 +10,7 @@
 #include "quadradoAnimado.h" /* cria_janela() */
 
 #define DEPURACAO 0
+#define REFERENCIA 5
 
 
 	/*
@@ -82,10 +83,12 @@ void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 	
 	quadrado->cor = 4;
 	
-	quadrado->velocidade = 0.2;
+	quadrado->velocidade = 1;
 	quadrado->direcao = 1;
+	quadrado->texto = NULL;
 	imprime_quadrado(*quadrado,ATIVAR);
-	
+	quadrado->textoRef.X = Janela.ponto1.X;
+	quadrado->textoRef.Y = Janela.ponto2.Y;
 }
 
 /*	|---------------  Gerencia Janela ----------------------|
@@ -138,8 +141,6 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 	
 	do
 	{
-		movimenta_quadrado2(quadrado , *janela);
-		
 		if(hit(KEYBOARD_HIT))
 		{
 			evento = Evento();
@@ -154,6 +155,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 							case F2:
 								//quadrado->velocidade += 100;
 								quadrado->texto = "F2";
+								quadrado->velocidade -= 0.1;
 								break;
 							
 						/*-- diminui a velocidade interna do quadrado -- */ 
@@ -163,17 +165,20 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 									quadrado->velocidade -= 100;
 								*/
 								quadrado->texto = "Tecla F1";
+								quadrado->velocidade += 0.1;
 								break;
 								
 							
 							case SETA_PARA_DIREITA:
 								//quadrado->direcao = DIREITA;
 								quadrado->texto = "Seta Direita";
+								quadrado->direcao = DIREITA;
 								break;
 								
 							case SETA_PARA_ESQUERDA:
 								//quadrado->direcao = ESQUERDA;
 								quadrado->texto = "Seta Esquerda";
+								quadrado->direcao = ESQUERDA;
 								break;
 								
 							case SETA_PARA_BAIXO:
@@ -184,17 +189,18 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 							case SETA_PARA_CIMA:
 								//quadrado->direcao = CIMA;
 								quadrado->texto = "Seta Cima";
+								quadrado->direcao = CIMA;
 								break;
 							
 							/*-- aumenta area do quadrado externo para esquerda -- */
 							case F3:
-							/*
-								if(janela->ponto1.X < 1)
+							
+								if(janela->ponto1.X > 1)
 								{
 									janela->ponto1.X -= 1;
-									janela->coluna += ;
+									janela->coluna += 1;
 								}
-								*/
+								
 								quadrado->texto = "F3";
 								break;
 							
@@ -262,27 +268,25 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 					
 					gerencia_janela(janela, *console);
 					imprime_info(*quadrado);
-					movimenta_quadrado2(quadrado, *janela);
 				
 				}
 			}
 		}
 		
+		movimenta_quadrado2(quadrado, *janela);
 	}while(1);
 }
 
 void imprime_info(QUADRADO quadrado)
 {
-		int TAMANHO;
 		
-		TAMANHO = 10;
 		textbackground(BLACK);
 		textcolor(RED);
 		
-		gotoxy(80,2);
+		gotoxy((quadrado.textoRef.X)*2,(quadrado.textoRef.Y/10));
 		printf("QUADRADO ANIMADO!!");
 		
-		gotoxy(TAMANHO,4);
+		gotoxy(quadrado.textoRef.X/2 - REFERENCIA,quadrado.textoRef.Y+REFERENCIA);
 		printf("Direcao atual: ");
 		
 		switch(quadrado.direcao)
@@ -301,10 +305,10 @@ void imprime_info(QUADRADO quadrado)
 				break;
 		}
 		
-		gotoxy(TAMANHO + 40,4);
+		gotoxy(quadrado.textoRef.X/2 - REFERENCIA,quadrado.textoRef.Y+REFERENCIA+1);
 		printf("Tecla digitada: %s ", quadrado.texto);
 		
-		gotoxy(TAMANHO + 90,4);
+		gotoxy(quadrado.textoRef.X/2-REFERENCIA,quadrado.textoRef.Y+REFERENCIA+2	);
 		printf("Velocidade atual: %.2f ",quadrado.velocidade);
 }
 
@@ -413,7 +417,7 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 	
 void movimenta_quadrado2(QUADRADO *quadrado, JANELA janela)
 {
-	float controle = (2.0 - quadrado->velocidade)*100;
+	float controle = quadrado->velocidade*1000;
 		
 	
 	switch (quadrado->direcao)
@@ -439,6 +443,7 @@ void movimenta_quadrado2(QUADRADO *quadrado, JANELA janela)
 				imprime_quadrado(*quadrado, 1);
 				Sleep(controle);
 				imprime_quadrado(*quadrado, 0);
+				quadrado->centro.Y =(quadrado->centro.Y)+1;
 			
 			if(quadrado->centro.Y + 2 == janela.ponto2.Y)
 				quadrado->direcao = CIMA;

@@ -35,7 +35,7 @@ typedef struct _Janela
 	COORD ponto1;
 	COORD ponto2;
 	COORD centro;
-	COORD texo;
+
 	int linha, coluna,cor;
 	
 }JANELA;
@@ -53,7 +53,7 @@ typedef struct _quadrado{
 	int cor;
 	DIRECAO direcao;
 	float velocidade;
-	COORD centro; 
+	COORD centro,textoRef; 
 	char *texto;
 }QUADRADO;
 
