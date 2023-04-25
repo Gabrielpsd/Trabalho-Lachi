@@ -14,8 +14,8 @@ setDimensaoJanela() ,setTituloConsole() ,setCursorStatus(),Sleep() */
 ela somasse a posicao do ponto apenas para poder imprimir em determinado local da tela(no canto inferior esquerdo nesse caso)
 */
 
-#define LINHA 40
-#define COLUNA 100
+#define LINHA 20
+#define COLUNA 50
 #define VELOCIDADE 100 /*dada em milisegundos */ 
 #define CARACTER_HORIZONTAL 32
 #define CARACTER_VERTICAL 32	
@@ -133,12 +133,12 @@ void gerencia_janela(JANELA *Janela)
 		putchar(CARACTER_HORIZONTAL);
 		
 		/*linha inferior*/
-		gotoxy(Janela->ponto1.X+i,Janela->ponto2.Y);
+		gotoxy(Janela->ponto1.X+i,Janela->ponto2.Y-1);
 		putchar(CARACTER_HORIZONTAL);
 	
 	}
 	
-	for(i = 0; i <= Janela->linha; ++i)
+	for(i = 0; i < Janela->linha; ++i)
 	{
 		/* coluna horizontal da esquerda */ 
 		gotoxy(Janela->ponto1.X,Janela->ponto1.Y + i);
@@ -243,12 +243,12 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 							/*-- diminui a borda do quadrado da esquerda --*/ 							
 							case F4:
 								
-								if(janela->ponto2.X-3 > janela->ponto1.X)
+								if(janela->ponto2.X-4 > janela->ponto1.X)
 								{
 									janela->ponto2.X -= 1;
 									janela->coluna -= 1;
 									
-									if(janela->ponto2.X == quadrado->centro.X + 2)
+									if(janela->ponto2.X == quadrado->centro.X + 1)
 										quadrado->centro.X--;
 								}
 								quadrado->texto = "Tecla F4";
@@ -267,12 +267,12 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 							/*-- diminui a area da do quadrado para direita --*/
 							case F6: 
 								
-								if(janela->ponto1.X < janela->ponto2.X - 3)
+								if(janela->ponto1.X < janela->ponto2.X - 4)
 								{
 									janela->ponto1.X += 1;
 									janela->coluna -= 1;
 									
-									if(janela->ponto1.X == quadrado->centro.X-2)
+									if(janela->ponto1.X == quadrado->centro.X-1)
 										quadrado->centro.X++;
 								}
 								quadrado->texto = "Tecla F6";
@@ -290,7 +290,7 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 							
 							/*-- diminui a area superior --*/ 
 							case F8:
-								if(janela->ponto1.Y < janela->ponto2.Y -3)
+								if(janela->ponto1.Y < janela->ponto2.Y - 5)
 								{
 									janela->ponto1.Y += 1;
 									janela->linha -= 1;
@@ -314,12 +314,12 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 								
 							/*--diminui a area para baixo --*/
 							case F10:
-								if(janela->ponto2.Y > janela->ponto1.Y + 3)
+								if(janela->ponto2.Y > janela->ponto1.Y + 5)
 								{
 									janela->linha -= 1;
 									janela->ponto2.Y -=1;
 									
-									if(janela->ponto2.Y  == quadrado->centro.Y + 2)
+									if(janela->ponto2.Y  == quadrado->centro.Y - 2)
 										quadrado->centro.Y--;
 								}
 								quadrado->texto = "Tecla F10";
@@ -431,8 +431,11 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 		{
 			for(j = 0; j < 3; ++j)
 			{
+				if(!(j== 1 && i ==1))
+				{
 				gotoxy((quadrado.centro.X - 1) +j, (quadrado.centro.Y - 1) + i);
 				putchar(42);
+				}
 			}
 		}
 	}
@@ -472,38 +475,42 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 		
 		/* case (0) */ 
 		case (CIMA):
-
-			quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
+			imprime_info(*quadrado);
 	
 			if(quadrado->centro.Y - 2 == janela.ponto1.Y)
 				quadrado->direcao = BAIXO;
+			else
+				quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
 			
 			break;
 		/* case (2) */ 
 		case (BAIXO):
-
-				quadrado->centro.Y =(quadrado->centro.Y)+1;
+			imprime_info(*quadrado);
 			
-			if(quadrado->centro.Y + 2 == janela.ponto2.Y)
+			if(quadrado->centro.Y + 3 == janela.ponto2.Y)
 				quadrado->direcao = CIMA;
+			else
+				quadrado->centro.Y =(quadrado->centro.Y)+1;
 			
 			break;
 		/* case (3) */ 
 		case (ESQUERDA):
-
-			quadrado->centro.X = (quadrado->centro.X) - 1 ;
+			imprime_info(*quadrado);
 				
 			if(quadrado->centro.X - 2 == janela.ponto1.X)
 				quadrado->direcao = DIREITA;
+			else
+				quadrado->centro.X = (quadrado->centro.X) - 1 ;
 			
 			break;
 		/* case (1) */ 
 		case (DIREITA):
-		
-				quadrado->centro.X = (quadrado->centro.X) + 1 ;
+			imprime_info(*quadrado);
 				
 			if(quadrado->centro.X + 2 == janela.ponto2.X)
 				quadrado->direcao = ESQUERDA;
+			else
+				quadrado->centro.X = (quadrado->centro.X) + 1 ;
 			
 			break;
 	}
