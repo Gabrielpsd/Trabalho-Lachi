@@ -126,14 +126,15 @@ void cria_quadrado(QUADRADO *, JANELA);
 	|-------------------------------------------------------|
 */
 
-void cria_ponto(JANELA *, CONSOLE);
+void cria_ponto(JANELA *);
 
 /*	|---------------  Janela ---------------------------|
 	|	Ira criar a janela principal do jogo			|
 	|		Tamanho da janela e posicao da janela		|
 	|		Tamanho Maximo;								|
 	|	RECEBE:JANELA(REFERENCIA);						|
-	|	RETORNA: VOID 									|
+	-> janela *: ponteiro para a janela do jogo|	
+	RETORNA: VOID 									|
 	|---------------------------------------------------|
 */	
 	
@@ -149,7 +150,7 @@ void gerencia_janela(JANELA *);
 	|-------------------------------------------------------|
 */
 
-void gerencia_programa(JANELA *, CONSOLE *, QUADRADO *);
+void gerencia_programa(JANELA *, QUADRADO *);
 	
 /*	|---------------  imprime info -------------------------|
 	|		Funcao ira imprimir as informacoes na tela		|

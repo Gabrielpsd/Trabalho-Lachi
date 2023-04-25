@@ -14,7 +14,13 @@ setDimensaoJanela() ,setTituloConsole() ,setCursorStatus(),Sleep() */
 ela somasse a posicao do ponto apenas para poder imprimir em determinado local da tela(no canto inferior esquerdo nesse caso)
 */
 
-#define REFERENCIA 5
+#define LINHA 40
+#define COLUNA 100
+#define VELOCIDADE 100 /*dada em milisegundos */ 
+#define CARACTER_HORIZONTAL 32
+#define CARACTER_VERTICAL 32	
+#define COR_INICIO_JANELA 9
+
 
 /*	|---------------  INICIO ---------------------------|
 	|	 Unica funcao fora da ordem alfabetica 			|
@@ -38,15 +44,17 @@ void inicia_jogo()
 	
 	srand(time(NULL));
 	
-	Janela->cor = rand() % 15 + 1;
+	Janela->cor = COR_INICIO_JANELA;
 	
 	set_ambiente(console, ATIVAR);
-	cria_ponto(Janela, *console);
+	cria_ponto(Janela);
 	cria_quadrado(quadrado, *Janela);
 	gerencia_janela(Janela);
 	imprime_info(*quadrado);
 	
-	gerencia_programa( Janela,  console,  quadrado);
+	gerencia_programa( Janela, quadrado);
+	
+	set_ambiente(console,DESATIVAR);
 	
 }
 
@@ -59,21 +67,21 @@ void inicia_jogo()
 	|-------------------------------------------------------|
 */
 
-void cria_ponto(JANELA *Janela,CONSOLE console)
+void cria_ponto(JANELA *Janela)
 {	
 	
-	Janela->coluna = 80;
-	Janela->linha = 20;
+	Janela->coluna = COLUNA;
+	Janela->linha = LINHA;
 	
 	
-	Janela->ponto1.X = (console.dimensao_maxima.X/2)/2;
-	Janela->ponto1.Y = (console.dimensao_maxima.Y/2)/2;
+	Janela->ponto1.X = 1;
+	Janela->ponto1.Y = 1;
 	
 	Janela->ponto2.X = Janela->ponto1.X + Janela->coluna ;
 	Janela->ponto2.Y = Janela->ponto1.Y + Janela->linha ;
 	
-	Janela->centro.X = Janela->ponto1.X + Janela->coluna/2;
-	Janela->centro.Y = Janela->ponto1.Y  + Janela->linha/2;
+	Janela->centro.X = Janela->ponto2.X/2;
+	Janela->centro.Y = Janela->ponto2.Y/2;
 }
 
 /*	|---------------  Cria quadrado  -----------------------|
@@ -90,10 +98,10 @@ void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 	quadrado->centro.X = Janela.centro.X;
 	quadrado->centro.Y = Janela.centro.Y;
 	
-	quadrado->cor = 4;
+	quadrado->cor = 1;
 	
-	quadrado->velocidade = 1;
-	quadrado->direcao = 1;
+	quadrado->velocidade = VELOCIDADE;
+	quadrado->direcao = rand()%3;
 	quadrado->texto = NULL;
 	imprime_quadrado(*quadrado,ATIVAR);
 	quadrado->textoRef.X = Janela.ponto1.X;
@@ -122,11 +130,11 @@ void gerencia_janela(JANELA *Janela)
 	{
 		/* linha superior */ 
 		gotoxy(Janela->ponto1.X + i,Janela->ponto1.Y);
-		putchar(32);
+		putchar(CARACTER_HORIZONTAL);
 		
 		/*linha inferior*/
 		gotoxy(Janela->ponto1.X+i,Janela->ponto2.Y);
-		putchar(32);
+		putchar(CARACTER_HORIZONTAL);
 	
 	}
 	
@@ -134,11 +142,11 @@ void gerencia_janela(JANELA *Janela)
 	{
 		/* coluna horizontal da esquerda */ 
 		gotoxy(Janela->ponto1.X,Janela->ponto1.Y + i);
-		putchar(32);
+		putchar(CARACTER_VERTICAL);
 		
 		/*coluna horizontal direita */ 
 		gotoxy(Janela->ponto2.X,Janela->ponto1.Y+i);
-		putchar(32);
+		putchar(CARACTER_VERTICAL);
 	}
 	
 	
@@ -153,19 +161,20 @@ void gerencia_janela(JANELA *Janela)
 	|-------------------------------------------------------|
 */
 
-void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
+void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 {	
 	EVENTO evento; 
 	BOOLEANO controle;
-	console = console;
 	controle = VERDADEIRO;
 	
 	do
 	{
+		timeBeginPeriod(1);
+		movimenta_quadrado(quadrado, *janela);
 		
 		if(hit(KEYBOARD_HIT))
 		{
-			timeBeginPeriod(1);
+			
 			evento = Evento();
 			
 			if(evento.tipo_evento & KEY_EVENT)
@@ -177,18 +186,22 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 						/*-- aumenta a velocidade do quadrado interno -- */
 							case F2:
 								
+								if(quadrado->velocidade > 100)
+								{
 								quadrado->texto = "F2";
-								quadrado->velocidade -= 0.1;
+								quadrado->velocidade -= 100;
+								}
+								
 								break;
 							
 						/*-- diminui a velocidade interna do quadrado -- */ 
 							case F1: 
-								/*
-								if(quadrado->velocidade > 2000)
-									quadrado->velocidade -= 100;
-								*/
-								quadrado->texto = "Tecla F1";
-								quadrado->velocidade += 0.1;
+								
+								if(quadrado->velocidade < 2000)
+								{
+									quadrado->texto = "Tecla F1";
+									quadrado->velocidade += 100;
+								}
 								break;
 								
 							
@@ -218,7 +231,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 							/*-- aumenta area do quadrado externo para esquerda -- */
 							case F3:
 							
-								if(janela->ponto1.X > 0)
+								if(janela->ponto1.X > 1)
 								{
 									janela->ponto1.X -= 1;
 									janela->coluna += 1;
@@ -230,17 +243,20 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 							/*-- diminui a borda do quadrado da esquerda --*/ 							
 							case F4:
 								
-								if(janela->ponto2.X > janela->ponto1.X + 2)
+								if(janela->ponto2.X-3 > janela->ponto1.X)
 								{
 									janela->ponto2.X -= 1;
 									janela->coluna -= 1;
+									
+									if(janela->ponto2.X == quadrado->centro.X + 2)
+										quadrado->centro.X--;
 								}
 								quadrado->texto = "Tecla F4";
 								break;
 							
 							/*-- aumenta a area do quadrado para direita --*/
 							case F5:
-								if(janela->coluna < 100 && janela->ponto2.X < (console->dimensao_maxima.X))
+								if(janela->coluna < 100 && janela->ponto2.X < 1 + COLUNA)
 								{
 									janela->coluna += 1;
 									janela->ponto2.X += 1; 
@@ -255,13 +271,16 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								{
 									janela->ponto1.X += 1;
 									janela->coluna -= 1;
+									
+									if(janela->ponto1.X == quadrado->centro.X-2)
+										quadrado->centro.X++;
 								}
 								quadrado->texto = "Tecla F6";
 								break;
 								
 							/*-- aumenta a areda do quadrado para cima --*/
 							case F7:
-								if(janela->ponto1.Y > (console->dimensao_maxima.Y/4))
+								if(janela->ponto1.Y > 1)
 								{
 									janela->ponto1.Y -= 1;
 									janela->linha += 1;
@@ -275,6 +294,9 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								{
 									janela->ponto1.Y += 1;
 									janela->linha -= 1;
+									
+									if(janela->ponto1.Y == quadrado->centro.Y- 2 )
+										quadrado->centro.Y++;
 								}
 								
 								quadrado->texto = "Tecla F8";
@@ -282,7 +304,7 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								
 							/*-- aumenta a area para baixo --*/
 							case F9:
-								if(janela->ponto2.Y < (console->dimensao_maxima.Y*3/4))
+								if(janela->ponto2.Y < LINHA)
 								{
 									janela->ponto2.Y += 1;
 									janela->linha += 1;
@@ -296,19 +318,22 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 								{
 									janela->linha -= 1;
 									janela->ponto2.Y -=1;
+									
+									if(janela->ponto2.Y  == quadrado->centro.Y + 2)
+										quadrado->centro.Y--;
 								}
 								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*--alterna a cor do quadrado --*/
 							case ESPACO:
-								janela->cor = rand() % 15;
+								janela->cor = rand() % 15+1;
 								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*-- alterna a cor do quadrado --*/
 							case TAB:
-								quadrado->cor = rand() %15;
+								quadrado->cor = rand() %15+1;
 								quadrado->texto = "Tecla TAB";
 								break;
 								
@@ -325,17 +350,13 @@ void gerencia_programa(JANELA *janela, CONSOLE *console, QUADRADO *quadrado)
 				
 				}
 			}
-		timeEndPeriod(1);
+		
 		}
-		movimenta_quadrado(quadrado, *janela);
+		
+		timeEndPeriod(1);
 		
 	}while(controle == VERDADEIRO);
-	
-	set_ambiente(console,DESATIVAR);
-	gotoxy(janela->centro.X-10,janela->centro.Y-2);
-	textcolor(WHITE);
-	printf("FIM DA EXECUCAO DO PROGRAMA");
-	gotoxy(console->dimensao_maxima.X,console->dimensao_maxima.Y);
+
 }
 
 /*	|---------------  imprime info -------------------------|
@@ -356,10 +377,7 @@ void imprime_info(QUADRADO quadrado)
 		textbackground(BLACK);
 		textcolor(RED);
 		
-		gotoxy((quadrado.textoRef.X)*2,(quadrado.textoRef.Y/10));
-		printf("QUADRADO ANIMADO!!");
-		
-		gotoxy(quadrado.textoRef.X/2 - REFERENCIA,quadrado.textoRef.Y+REFERENCIA);
+		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+1);
 		printf("Direcao atual: ");
 		
 		switch(quadrado.direcao)
@@ -378,11 +396,11 @@ void imprime_info(QUADRADO quadrado)
 				break;
 		}
 		
-		gotoxy(quadrado.textoRef.X/2 - REFERENCIA,quadrado.textoRef.Y+REFERENCIA+1);
+		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+2);
 		printf("Tecla digitada: %s ", quadrado.texto);
 		
-		gotoxy(quadrado.textoRef.X/2-REFERENCIA,quadrado.textoRef.Y+REFERENCIA+2	);
-		printf("Velocidade atual: %.2f ",quadrado.velocidade);
+		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+3);
+		printf("Velocidade atual: %.2f segundos",quadrado.velocidade);
 }
 
 /*	|----------------  Imprime Quadrado --------------------|
@@ -444,19 +462,18 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 {
-	float controle = quadrado->velocidade*1000;
-		
 	
+	imprime_quadrado(*quadrado, 1);
+	Sleep(quadrado->velocidade);
+	imprime_quadrado(*quadrado, 0);
+		
 	switch (quadrado->direcao)
 	{
+		
 		/* case (0) */ 
 		case (CIMA):
-			imprime_info(*quadrado);
-			
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
+
+			quadrado->centro.Y = (quadrado->centro.Y) - 1 ;
 	
 			if(quadrado->centro.Y - 2 == janela.ponto1.Y)
 				quadrado->direcao = BAIXO;
@@ -464,12 +481,7 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 			break;
 		/* case (2) */ 
 		case (BAIXO):
-			
-			imprime_info(*quadrado);
-			
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
+
 				quadrado->centro.Y =(quadrado->centro.Y)+1;
 			
 			if(quadrado->centro.Y + 2 == janela.ponto2.Y)
@@ -479,10 +491,7 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 		/* case (3) */ 
 		case (ESQUERDA):
 
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
-				quadrado->centro.X = (quadrado->centro.X) - 1 ;
+			quadrado->centro.X = (quadrado->centro.X) - 1 ;
 				
 			if(quadrado->centro.X - 2 == janela.ponto1.X)
 				quadrado->direcao = DIREITA;
@@ -490,10 +499,7 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 			break;
 		/* case (1) */ 
 		case (DIREITA):
-
-				imprime_quadrado(*quadrado, 1);
-				Sleep(controle);
-				imprime_quadrado(*quadrado, 0);
+		
 				quadrado->centro.X = (quadrado->centro.X) + 1 ;
 				
 			if(quadrado->centro.X + 2 == janela.ponto2.X)
@@ -549,6 +555,11 @@ void set_ambiente(CONSOLE *console, int status )
 		setCursorStatus(DESLIGAR);
 		
 	}else{
+		
+		gotoxy(console->dimensao_maxima.X/4,console->dimensao_maxima.Y/4);
+		textcolor(WHITE);
+		printf("FIM DA EXECUCAO DO PROGRAMA");
+		gotoxy(console->dimensao_maxima.X,console->dimensao_maxima.Y);
 		setPosicaoJanela(console->posicao_inicial.X,console->posicao_inicial.Y);
 		setDimensaoJanela(console->dimensao_inicial.X,console->dimensao_inicial.Y);
 		setEstadoBarraTarefas(VISIVEL);
