@@ -23,6 +23,12 @@ typedef enum
 	ATIVAR
 }ATIVIDADE;
 
+/*	|------------------- Booleano ------------------|
+	|		Tipo de dado que armazena um valor 		|
+	|	logico										|
+	|-----------------------------------------------|
+*/
+
 typedef enum
 {	FALSO,
 	VERDADEIRO
@@ -86,7 +92,7 @@ typedef struct _Janela
 typedef struct _quadrado{
 	int cor;
 	DIRECAO direcao;
-	float velocidade;
+	int velocidade;
 	COORD centro,textoRef; 
 	char *texto;
 }QUADRADO;
@@ -110,7 +116,11 @@ void inicia_jogo();
 	|	 O qudrado central tera uma configuração  			|
 	|	padrão, essa funcção serve para colocar 	  		|
 	|	a configuração padrão								|
-	|	RECEBE: QUADRADO(PONTEIRO), JANELA (VALOR)			|
+	|	RECEBE:												|
+	|	->QUADRADO *: ponteiro que armazena a janela 		|
+	|	colorida por onde o quadrado se movimenta.			|
+	|	-> JANELA: coordenadas do consolole para criação da |
+	|	janela.											|
 	|	RETORNA: VOID										|
 	|-------------------------------------------------------|
 */
@@ -121,7 +131,9 @@ void cria_quadrado(QUADRADO *, JANELA);
 	|		Ira criar os pontos principais a qual 			|
 	|	o programa ira utilizar como referencia para 		|
 	|	realizar as configurações e movimentações 			|
-	|	RECEBE: JANELA(REFERENCIA), CONSOLE(VALOR)			|
+	|	RECEBE: 											|
+	|	->Janela *: ponteiro que esta armazenada 			|
+	|	as coordenadas da janela colorida.					|
 	|	RETORNA: VOID										|	
 	|-------------------------------------------------------|
 */
@@ -132,9 +144,9 @@ void cria_ponto(JANELA *);
 	|	Ira criar a janela principal do jogo			|
 	|		Tamanho da janela e posicao da janela		|
 	|		Tamanho Maximo;								|
-	|	RECEBE:JANELA(REFERENCIA);						|
-	-> janela *: ponteiro para a janela do jogo|	
-	RETORNA: VOID 									|
+	|	RECEBE:					|
+	|	-> JANELA *: ponteiro para a janela do jogo		|	
+	|	ETORNA: VOID 									|
 	|---------------------------------------------------|
 */	
 	
@@ -144,8 +156,11 @@ void gerencia_janela(JANELA *);
 	|		Funcao ira realizar as chamadas das funcoes		|
 	|	essa, funcao sera a que ira ler as entradas no 		|
 	|	teclado;											|	
-	|	RECEBE: QUADRADO(REFERENCIA),CONSOLE(REFERENCIA)	|
-	|	QUADRADO(REFERENCIA)								|
+	|	RECEBE: 											|
+	|	-> QUADRADO * :ponteiro com todas as informações 	|
+	|	do quadrado interno que se movimenta				|
+	|	->JANELA *: ponteiro que contem todas as informações|
+	|	necessarias para manipulação do quadrado colorido 	|
 	|	RETORNA: VOID										|
 	|-------------------------------------------------------|
 */
@@ -156,7 +171,9 @@ void gerencia_programa(JANELA *, QUADRADO *);
 	|		Funcao ira imprimir as informacoes na tela		|
 	|	(direcao, velocidade  e sentido) armazenadas dentro |
 	|	da estrutura QUADRADO;								|
-	|	RECEBE: QUADRADO(VALOR)								|
+	|	RECEBE:												|
+	|	-> QUADRADO: tipo de dado que contem as informações |
+	|	do quadrado interno									|
 	|	RETORNA: VOID										|
 	|-------------------------------------------------------|
 */
@@ -168,7 +185,11 @@ void imprime_info(QUADRADO);
 	|	utilizando o centro do quadrado como referencia |
 	|	ira realizar a impressao dos outros caracteres	|
 	|	que compoe a figura na tela						|
-	|	RECEBE: QUADRADO(REFERENCIA), JANELA(VALOR)		|
+	|	RECEBE: 										|
+	|	-> QUADRADO: contem os valores do quadrado 		|
+	|	interno;										|
+	|	->ATIVIDADE: parametro que controla o 			|
+	|	comportamento da funcao(ativa ou desativa);		|
 	|	RETORNA:VOID									|
 	|---------------------------------------------------|
 */
@@ -181,7 +202,12 @@ void imprime_quadrado(QUADRADO, ATIVIDADE);
 	|	apenas pega o a direcao do quadrado contido na 	|
 	|	estrutura e realiza a movimentacao do centro 	|
 	|	na direcao contida la dentro					|
-	|	RECEBE: QUADRADO(REFERENCIA), JANELA(VALOR)		|
+	|	RECEBE: 										|
+	|	->QUADRADO *:ponteiro de quadrado que contem 	|
+	|	as informações do quadrado interno que sera 	|
+	|	movimentado;									|
+	|	->JANELA: variavel que armazena a janela por 	|
+	|	onde o quadrado interno irra se movimentar;		|
 	|	RETORNA:VOID									|
 	|---------------------------------------------------|
 */
@@ -192,10 +218,13 @@ void movimenta_quadrado(QUADRADO *, JANELA);
 	|	Ira criar a definição do prompt do jogo			|
 	|	Tamanho da janela e posicao da janela			|
 	|	Tamanho Maximo;									|
+	|	->CONSOLE *: ponteiro que armazena os valores de| 
+	|	referencia do console onde sera executada 		|
+	|	o programa principal							|
 	|---------------------------------------------------|
-	*/
+*/
 
-void set_ambiente(CONSOLE *, int);
+void set_ambiente(CONSOLE *, ATIVIDADE);
 
 /*############################  FIM DAS DECLARACOES DAS FUNCOES #####################################*/ 
 

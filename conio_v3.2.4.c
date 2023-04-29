@@ -1,4 +1,4 @@
-/* Implementaci�n de conio segun especificaciones de Borland
+ /* Implementaci�n de conio segun especificaciones de Borland
  * para Mingw/Dev-C++.
  *
  * Por:

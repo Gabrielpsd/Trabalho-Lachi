@@ -10,17 +10,21 @@
 setDimensaoJanela() ,setTituloConsole() ,setCursorStatus(),Sleep() */ 
 #include "quadradoAnimado.h" /* cria_janela() */
 
-/* essa referencia é utilizada para imprimir as infromacoes na tela
-ela somasse a posicao do ponto apenas para poder imprimir em determinado local da tela(no canto inferior esquerdo nesse caso)
-*/
-
 #define LINHA 20
 #define COLUNA 50
-#define VELOCIDADE 100 /*dada em milisegundos */ 
-#define CARACTER_HORIZONTAL 32
-#define CARACTER_VERTICAL 32	
+#define VELOCIDADE 1000 /*dada em milisegundos */ 
+	
 #define COR_INICIO_JANELA 9
 
+/* ------------------- Observações iniciais ----------------
+	-> sempre que aparecer a palavra "console" esta sendo referido ao prompt de 
+	comando onde o programa esta sendo executado;
+	-> sempre que aparecer nos comentarios a palavra "janela" 
+	esta sendo referenciado a janela colorida por onde o quadrado de asteriscos esta se movimentando;
+	-> sempre que aparecer a palavra quadrado esta sendo referido ao quadrado interno formado 
+	por asteriscos que se movimenta dentro da janela;
+
+*/ 
 
 /*	|---------------  INICIO ---------------------------|
 	|	 Unica funcao fora da ordem alfabetica 			|
@@ -34,26 +38,43 @@ ela somasse a posicao do ponto apenas para poder imprimir em determinado local d
 	
 void inicia_jogo()
 {	
+	/* declara os tipos de dados que serao utiliados e tambem um ponteiro que ira apontar para 
+	o endereco de cada estrutura*/ 
 	JANELA *Janela, refJanela;
 	CONSOLE *console , Pointer_console;
 	QUADRADO *quadrado, refquad;
 	
+	/* aponta cada ponteiro para o seu respectivo tipo de dado */ 
 	console = &Pointer_console;
 	Janela = &refJanela;
 	quadrado = &refquad;
 	
+	/* seta a semente do funcao geradora de numeros aleatorios para o relogio do computador
+	isso garante que a semente geradora de numero aleatorio sempre mudara a cada execução */ 
 	srand(time(NULL));
 	
+	/* determina  cor inicial da janela */
 	Janela->cor = COR_INICIO_JANELA;
 	
+	/* primeiro chama a funcao que ajusta o console */ 
 	set_ambiente(console, ATIVAR);
+	
+	/* cria os pontos de referencia inicial que sera usado para criar a janela no inicio*/
 	cria_ponto(Janela);
+	
+	/* cria o quadrado interno que ficara se movimentado por dentro da janela */ 
 	cria_quadrado(quadrado, *Janela);
+	
+	/* cria a janela inicia do jogo */ 
 	gerencia_janela(Janela);
+	
+	/* imprime as informações inicias que estao contidas dentro do quadrado */ 
 	imprime_info(*quadrado);
 	
+	/* funcoa que ficara responsavel por fazer a leitura do teclado e ira realizar as chamadas das funcoes devidas para cada tecla pressionada */ 
 	gerencia_programa( Janela, quadrado);
 	
+	/* reseta o console para os valores armazenados na estrutura lidos no inico do programa */
 	set_ambiente(console,DESATIVAR);
 	
 }
@@ -70,16 +91,21 @@ void inicia_jogo()
 void cria_ponto(JANELA *Janela)
 {	
 	
+	/* atribui o tamanho da linha e da coluna para criar o ponto de referencia */ 
 	Janela->coluna = COLUNA;
 	Janela->linha = LINHA;
 	
 	
+	/* cria o ponto inicial do programa*/
 	Janela->ponto1.X = 1;
 	Janela->ponto1.Y = 1;
 	
+	/* cria o outro ponto de referencia que esta localizado na transversal do ponto 1 */ 
 	Janela->ponto2.X = Janela->ponto1.X + Janela->coluna ;
 	Janela->ponto2.Y = Janela->ponto1.Y + Janela->linha ;
 	
+	
+	/* cria um ponto que esta localizado no centro da janela */ 
 	Janela->centro.X = Janela->ponto2.X/2;
 	Janela->centro.Y = Janela->ponto2.Y/2;
 }
@@ -95,11 +121,14 @@ void cria_ponto(JANELA *Janela)
 
 void cria_quadrado(QUADRADO *quadrado , JANELA Janela)
 {
+	/* determina a posicao inicial do quadrado */
 	quadrado->centro.X = Janela.centro.X;
 	quadrado->centro.Y = Janela.centro.Y;
 	
+	/* atribui uma cor inicial ao quadrado */
 	quadrado->cor = 1;
 	
+	/* seta alguns dados iniciais do quadrado */ 
 	quadrado->velocidade = VELOCIDADE;
 	quadrado->direcao = rand()%3;
 	quadrado->texto = NULL;
@@ -121,6 +150,7 @@ void gerencia_janela(JANELA *Janela)
 {
 	int i; 	
 	clrscr();
+	/* determina a cor do quadrado externo, os valor correto do quadrado esta armazenado dentro de uma variavel no proprio ponteiro*/
 	textbackground(Janela->cor);
 	/* para criar a janela sera criada quatro funcoes que tem como controle o tamanho da linha e da coluna
 	essas funcoes serao 4 for's para criar as linhas e as colunas
@@ -130,11 +160,11 @@ void gerencia_janela(JANELA *Janela)
 	{
 		/* linha superior */ 
 		gotoxy(Janela->ponto1.X + i,Janela->ponto1.Y);
-		putchar(CARACTER_HORIZONTAL);
+		putchar(32);
 		
 		/*linha inferior*/
 		gotoxy(Janela->ponto1.X+i,Janela->ponto2.Y-1);
-		putchar(CARACTER_HORIZONTAL);
+		putchar(32);
 	
 	}
 	
@@ -142,14 +172,14 @@ void gerencia_janela(JANELA *Janela)
 	{
 		/* coluna horizontal da esquerda */ 
 		gotoxy(Janela->ponto1.X,Janela->ponto1.Y + i);
-		putchar(CARACTER_VERTICAL);
+		putchar(32);
 		
 		/*coluna horizontal direita */ 
 		gotoxy(Janela->ponto2.X,Janela->ponto1.Y+i);
-		putchar(CARACTER_VERTICAL);
+		putchar(32);
 	}
 	
-	
+	textbackground(0);
 }
 
 /*	|---------------  Gerencia Programa --------------------|
@@ -163,27 +193,52 @@ void gerencia_janela(JANELA *Janela)
 
 void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 {	
+	int i;
+	
+	/* variavel que armazenara um evento(interação do usuário com o console) */
 	EVENTO evento; 
 	BOOLEANO controle;
 	controle = VERDADEIRO;
 	
+	i=10;
+	
 	do
 	{
 		timeBeginPeriod(1);
-		movimenta_quadrado(quadrado, *janela);
 		
+		/* essa funcao sleep seguido do do if serve para melhorar a precisao do programa
+		pois assim ao inves do meu programa precisar armazenar tempo de sleep para 1000 milisegundos por exemplo
+		ele reserva processamento para 100 milissegundo e quando ele fizer esse processo 10 vezes ele ira implemetar o movimento
+		desse modo ele faz poucas chamadas e a cada chamada o windows armazena pouco tempo para a execucao 
+		se colcoar o sleep(1) por exemplo o programa vai reservar pouco memoria para o tempo, mas fazer 1000 chamadas perde desempenho
+		como foi feito em teste nesse mesmo programa*/
+
+		Sleep(100);
+		
+		if(i == quadrado->velocidade/100){
+			movimenta_quadrado(quadrado, *janela);
+			i = 1;
+		}
+		
+		/* caso tenha uma interação do usuário com o console(teclado ou mouse) ficará armazenado no buffer e ao chamar essa funcão 
+		sera lido o buffer de eventos e entrara na funcao */ 
 		if(hit(KEYBOARD_HIT))
 		{
-			
+			/* pega os dados armazenados no buffer de eventos */
 			evento = Evento();
 			
+			/* verifica se é um evento de teclado */ 
 			if(evento.tipo_evento & KEY_EVENT)
 			{
+				/* verifica se a telca foi liberada pelo usuario */ 
 				if(evento.teclado.status_tecla == LIBERADA)
 				{
+					
+					/* caso esteja com a tecla livre e foi um evento de teclado o switch a seguir ira filtrar 
+					qual tecla o usuario digitou */
 					switch(evento.teclado.codigo_tecla)
 					{
-						/*-- aumenta a velocidade do quadrado interno -- */
+							/*-- aumenta a velocidade do quadrado interno -- */
 							case F2:
 								
 								if(quadrado->velocidade > 100)
@@ -194,7 +249,7 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 								
 								break;
 							
-						/*-- diminui a velocidade interna do quadrado -- */ 
+							/*-- diminui a velocidade interna do quadrado -- */ 
 							case F1: 
 								
 								if(quadrado->velocidade < 2000)
@@ -204,33 +259,37 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 								}
 								break;
 								
-							
+							/* altera a direção do quadrado apra direita se a tecla correspondente for pressionada */ 
 							case SETA_PARA_DIREITA:
 							
 								quadrado->texto = "Seta Direita";
 								quadrado->direcao = DIREITA;
 								break;
-								
+							
+							/* altera a direção do quadrado para esquerda se a tecla correspondente for pressionada */ 
 							case SETA_PARA_ESQUERDA:
 							
 								quadrado->texto = "Seta Esquerda";
 								quadrado->direcao = ESQUERDA;
 								break;
-								
+							
+							/* altera a direção do quadrado para baixo se a tecla correspondente for pressionada */ 							
 							case SETA_PARA_BAIXO:
 								quadrado->direcao = BAIXO;
 								quadrado->texto = "Seta Baixo";
 								break;
-								
+							
+							/* altera a direção do quadrado para cima se a tecla correspondente for pressionada */ 							
 							case SETA_PARA_CIMA:
 							
 								quadrado->texto = "Seta Cima";
 								quadrado->direcao = CIMA;
 								break;
 							
-							/*-- aumenta area do quadrado externo para esquerda -- */
+							/*-- aumenta area da janela para esquerda - */
 							case F3:
 							
+								/* verifica se o tamanho da janela esta de acordo com o do console */ 
 								if(janela->ponto1.X > 1)
 								{
 									janela->ponto1.X -= 1;
@@ -238,23 +297,27 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 								}
 								
 								quadrado->texto = "F3";
+								gerencia_janela(janela);
 								break;
 							
-							/*-- diminui a borda do quadrado da esquerda --*/ 							
+							/*-- diminui a borda da janela da esquerda --*/ 							
 							case F4:
 								
+								/* verifica se o tamanho minimo é suficiente para caber o quadrado */
 								if(janela->ponto2.X-4 > janela->ponto1.X)
 								{
 									janela->ponto2.X -= 1;
 									janela->coluna -= 1;
 									
+									/* verifica se o ao se movimetar não estara ooucupando o espaco onde o quadrado esta colocado */
 									if(janela->ponto2.X == quadrado->centro.X + 1)
 										quadrado->centro.X--;
 								}
 								quadrado->texto = "Tecla F4";
+								gerencia_janela(janela);
 								break;
 							
-							/*-- aumenta a area do quadrado para direita --*/
+							/*-- aumenta a area da janela para direita --*/
 							case F5:
 								if(janela->coluna < 100 && janela->ponto2.X < 1 + COLUNA)
 								{
@@ -262,6 +325,7 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 									janela->ponto2.X += 1; 
 								}
 								quadrado->texto = "Tecla F5";
+								gerencia_janela(janela);
 								break;
 							
 							/*-- diminui a area da do quadrado para direita --*/
@@ -272,86 +336,118 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 									janela->ponto1.X += 1;
 									janela->coluna -= 1;
 									
+									/* verifica se o ao se movimetar não estara ooucupando o espaco onde o quadrado esta colocado */
 									if(janela->ponto1.X == quadrado->centro.X-1)
 										quadrado->centro.X++;
 								}
+								
+								
 								quadrado->texto = "Tecla F6";
+								gerencia_janela(janela);
 								break;
 								
 							/*-- aumenta a areda do quadrado para cima --*/
 							case F7:
+							
+								/*verifica se o quadrado esta no limite superior do console */
 								if(janela->ponto1.Y > 1)
 								{
 									janela->ponto1.Y -= 1;
 									janela->linha += 1;
 								}
 								quadrado->texto = "Tecla F7";
+								gerencia_janela(janela);
 								break;
 							
 							/*-- diminui a area superior --*/ 
 							case F8:
+							
+								/* verifica se o tamanho minimo é suficiente para caber o quadrado */
 								if(janela->ponto1.Y < janela->ponto2.Y - 5)
 								{
 									janela->ponto1.Y += 1;
 									janela->linha -= 1;
 									
-									if(janela->ponto1.Y == quadrado->centro.Y- 2 )
+									/* verifica se o ao se movimetar não estara ooucupando o espaco onde o quadrado esta colocado */
+									if(janela->ponto1.Y == quadrado->centro.Y - 1 )
 										quadrado->centro.Y++;
 								}
 								
 								quadrado->texto = "Tecla F8";
+								gerencia_janela(janela);
 								break;
 								
 							/*-- aumenta a area para baixo --*/
 							case F9:
+							
+							/* verifica se o quadrado nao esta ultrapassando o tamanho maximo definido no limite */
 								if(janela->ponto2.Y < LINHA)
 								{
 									janela->ponto2.Y += 1;
 									janela->linha += 1;
 								}
 								quadrado->texto = "Tecla F9";
+								gerencia_janela(janela);
 								break;
 								
 							/*--diminui a area para baixo --*/
 							case F10:
+							
+								/* verifica se o tamanho minimo é suficiente para caber o quadrado */
 								if(janela->ponto2.Y > janela->ponto1.Y + 5)
 								{
 									janela->linha -= 1;
 									janela->ponto2.Y -=1;
 									
-									if(janela->ponto2.Y  == quadrado->centro.Y - 2)
+									/* verifica se o ao se movimetar não estara ooucupando o espaco onde o quadrado esta colocado */
+									if(janela->ponto2.Y  == quadrado->centro.Y +2 )
 										quadrado->centro.Y--;
 								}
 								quadrado->texto = "Tecla F10";
+								gerencia_janela(janela);
 								break;
 								
 							/*--alterna a cor do quadrado --*/
 							case ESPACO:
+							
+								/*altera a cor do quadrado para uma cor aleatoria diferente de preto */ 
 								janela->cor = rand() % 15+1;
 								quadrado->texto = "Tecla F10";
 								break;
 								
 							/*-- alterna a cor do quadrado --*/
 							case TAB:
+							
+							/* aletera a cor da janela para uma cor aleatoria diferente de preto */
 								quadrado->cor = rand() %15+1;
 								quadrado->texto = "Tecla TAB";
+								gerencia_janela(janela);
+								
 								break;
 								
 							/*-- finaliza programa --*/
 							case ESC:
+							
+								/* atribui o valor de saida para a minha variavel de controle */
 								controle = FALSO;
 								quadrado->texto = "Tecla ESC";
 								
 								break;
+								
+							default: 
+								/* caso a tecla digitada não seja reconhecida ira exeibir a mensagem de "NULL" para o usuario */
+								quadrado->texto = NULL;
+								break;
 					}
 					
-					gerencia_janela(janela);
 					imprime_info(*quadrado);
 				
 				}
 			}
 		
 		}
+		
+		++i;
 		
 		timeEndPeriod(1);
 		
@@ -374,12 +470,15 @@ void gerencia_programa(JANELA *janela, QUADRADO *quadrado)
 void imprime_info(QUADRADO quadrado)
 {
 		
+		/* muda a cor de fundo para preto e a cor da letra para vermelha, para uma melhro diferenciação do texto no console*/
 		textbackground(BLACK);
 		textcolor(RED);
 		
+		/* posiciona o cursor na referencia dentro de quadrado e imprime a mensagem de direção */
 		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+1);
 		printf("Direcao atual: ");
 		
+		/*imprime qual a direção */
 		switch(quadrado.direcao)
 		{
 			case (CIMA):
@@ -396,11 +495,13 @@ void imprime_info(QUADRADO quadrado)
 				break;
 		}
 		
+		/* posiciona o cursor na posicao de referencia dentro do quadrado, porem na linha de baixo (incremento de 1 em Y)*/
 		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+2);
 		printf("Tecla digitada: %s ", quadrado.texto);
 		
+		/* posiciona o cursor na posicao de referencia dentro do quadrado, porem na DUAS linhas a baixo (incremento de 2 em Y)*/
 		gotoxy(quadrado.textoRef.X,quadrado.textoRef.Y+3);
-		printf("Velocidade atual: %.2f segundos",quadrado.velocidade);
+		printf("Velocidade atual: %d milisegundos",quadrado.velocidade);
 }
 
 /*	|----------------  Imprime Quadrado --------------------|
@@ -423,6 +524,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 {
 	int i, j; 
 	
+	/* cao a funcao seja de imprimir ira entrar dentro desse primeiro IF */
 	if(funcao)
 	{
 		textcolor(quadrado.cor);
@@ -431,6 +533,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 		{
 			for(j = 0; j < 3; ++j)
 			{
+				/* condicional para não imrpimir o nada no centro do quadrado */ 
 				if(!(j== 1 && i ==1))
 				{
 				gotoxy((quadrado.centro.X - 1) +j, (quadrado.centro.Y - 1) + i);
@@ -439,7 +542,7 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 			}
 		}
 	}
-	else
+	else /* caso o parametro seja de apagar a funcao ira entrar dentro desse else*/
 	{
 		textbackground(BLACK);
 		textcolor(BLACK);
@@ -465,11 +568,11 @@ void imprime_quadrado(QUADRADO quadrado, ATIVIDADE funcao)
 
 void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 {
-	
-	imprime_quadrado(*quadrado, 1);
-	Sleep(quadrado->velocidade);
+	/* realiza a movimentação do quadrado */
 	imprime_quadrado(*quadrado, 0);
+
 		
+	/* posciona o quadrado na proxima direçao para que o quadrado ira andar na proxima chamda */
 	switch (quadrado->direcao)
 	{
 		
@@ -514,6 +617,8 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 			
 			break;
 	}
+	
+	imprime_quadrado(*quadrado, 1);
 }
 
 /*		|---------------  Set ambiente -------------------------|
@@ -526,9 +631,10 @@ void movimenta_quadrado(QUADRADO *quadrado, JANELA janela)
 		|-------------------------------------------------------|
 */
 
-void set_ambiente(CONSOLE *console, int status )
+void set_ambiente(CONSOLE *console, ATIVIDADE status)
 {
-	if(status){
+	if(status)
+	{
 		
 		/* armazena todos os valores atuais do console 
 		assim como sua posicao maxima, para que o console de usuario 
@@ -561,7 +667,9 @@ void set_ambiente(CONSOLE *console, int status )
 		setTituloConsole(TITULO);	
 		setCursorStatus(DESLIGAR);
 		
-	}else{
+	}
+	else
+	{
 		
 		gotoxy(console->dimensao_maxima.X/4,console->dimensao_maxima.Y/4);
 		textcolor(WHITE);
